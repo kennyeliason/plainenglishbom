@@ -41,6 +41,21 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Google Analytics - Added immediately after <head> as recommended by Google */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-2B944CWJX8"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-2B944CWJX8');
+            `,
+          }}
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `
