@@ -338,8 +338,7 @@ async function main() {
       continue;
     }
 
-    const shouldRegenerate =
-      !!regenerate || regenerateBook === book.shortName;
+    const shouldRegenerate = !!regenerate || regenerateBook === book.shortName;
 
     console.log(`\nTransforming ${book.shortName}...`);
     const existingBook = transformed.books.find(
@@ -367,13 +366,16 @@ async function main() {
           (c) => c.number === completedChapter.number
         );
         if (chapterIndex >= 0) {
-          transformed.books[bookIndex].chapters[chapterIndex] = completedChapter;
+          transformed.books[bookIndex].chapters[chapterIndex] =
+            completedChapter;
         } else {
           transformed.books[bookIndex].chapters.push(completedChapter);
         }
         // Save to disk
         saveTransformed(transformed);
-        console.log(`  💾 Saved ${book.shortName} chapter ${completedChapter.number}`);
+        console.log(
+          `  💾 Saved ${book.shortName} chapter ${completedChapter.number}`
+        );
       }
     );
 
