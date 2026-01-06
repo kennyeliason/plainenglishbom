@@ -8,6 +8,7 @@ import {
   slugify,
   unslugify,
 } from "@/lib/data";
+import { getChapterComparison } from "@/lib/comparison";
 import {
   generatePageMetadata,
   generateChapterSchema,
@@ -72,6 +73,9 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   if (!book || !chapter) {
     notFound();
   }
+
+  // Check if comparison exists
+  const comparison = getChapterComparison(bookName, chapterNum);
 
   const prevChapter = chapterNum > 1 ? chapterNum - 1 : null;
   const nextChapter =
@@ -207,6 +211,34 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             {chapter.verses.length} verses
           </span>
         </p>
+        {comparison && (
+          <div className="mt-4">
+            <Link
+              href={`/compare/${bookSlug}/${chapterNum}`}
+              className="compare-link inline-flex items-center gap-2 px-4 py-2 rounded-md border text-sm transition-colors"
+              style={{
+                backgroundColor: "var(--color-bg-secondary)",
+                borderColor: "var(--color-border)",
+                color: "var(--color-text-primary)",
+              }}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
+                />
+              </svg>
+              Compare Models
+            </Link>
+          </div>
+        )}
       </header>
 
       {/* Verses */}
@@ -228,7 +260,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                 >
                   {verse.plainText || verse.text}
                 </p>
-                {verse.plainText && verse.plainText !== verse.text && (
+                {verse.plainText && (
                   <details className="group">
                     <summary className="original-text-toggle inline-flex items-center gap-1 select-none">
                       <svg

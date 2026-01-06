@@ -300,6 +300,21 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--color-accent);
 }
 
+/* Compare link */
+.compare-link:hover {
+  border-color: var(--color-accent-soft) !important;
+  color: var(--color-accent) !important;
+}
+
+/* Comparison verse card */
+.comparison-verse-card {
+  padding: 1.5rem;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
 .original-text {
   margin-top: 0.75rem;
   padding-left: 1rem;
