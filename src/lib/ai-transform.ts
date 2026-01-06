@@ -1,43 +1,50 @@
 import OpenAI from "openai";
 import { postProcessTranslation } from "./translation-helpers";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// ============================================================================
+// AI TRANSLATION MODULE
+// ============================================================================
+// This module handles translating Book of Mormon verses from archaic English
+// to modern, plain English using OpenAI's GPT-4.1 model.
+//
+// Key design decisions:
+// - One verse at a time (prevents "verse bleed" where content mixes between verses)
+// - Simple, focused prompt that emphasizes accuracy
+// - Trust GPT-4.1 to do a good job - minimal validation
+// ============================================================================
 
-const SYSTEM_PROMPT = `You are translating scripture from archaic King James English into natural, modern English. Your task is to rewrite verses to be clear and accessible while preserving their meaning and reverence.
+// The model to use for all translations - GPT-4.1 is reliable and cost-effective
+const MODEL = "gpt-4.1";
 
-CRITICAL INSTRUCTIONS:
-- Do NOT do word-for-word replacement - understand the meaning and rewrite naturally
-- Think like a native English speaker - how would you say this today?
-- Rewrite sentences for natural flow, not literal translation
+// Lazy-load OpenAI client to ensure environment variables are loaded first
+let openaiClient: OpenAI | null = null;
 
-COMMON ISSUES TO FIX:
-- "yea" was used as an intensifier/connector, NOT as "yes" - remove it entirely or use "indeed" very sparingly only when emphasis is truly needed
-- "it came to pass" is a filler phrase - remove it entirely
-- "and behold" is archaic emphasis - remove or replace with natural transitions
-- Archaic pronouns (thee, thou, thy, ye) → modern equivalents (you, your)
-- Archaic verbs (-eth, -est endings, hath, doth, art, wilt) → modern forms
-- Break up long, complex sentences into clearer modern sentences
-- Use active voice when possible
-- Remove redundant phrases that don't add meaning
+function getOpenAIClient(): OpenAI {
+  if (!openaiClient) {
+    openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openaiClient;
+}
 
-EXAMPLES OF NATURAL VS LITERAL TRANSLATION:
-Bad (literal): "And it came to pass that the Lord spake unto my father, yea, even in a dream, and said unto him: Blessed art thou Lehi"
-Good (natural): "The Lord spoke to my father in a dream and said to him: Blessed are you, Lehi"
+// ============================================================================
+// THE PROMPT - Keep this simple and effective
+// ============================================================================
+const SYSTEM_PROMPT = `You are translating verses from the Book of Mormon from archaic English to clear, modern American English.
 
-Bad (literal): "having been highly favored; yes, having had knowledge"
-Good (natural): "having been highly favored and having had knowledge"
+RULES:
+1. Translate ONLY the provided verse - do not add content from other verses
+2. Remove archaic phrases like "it came to pass", "yea", "behold", "wherefore"
+3. Update old verb forms: "hath" → "has", "spake" → "spoke", "doth" → "does"
+4. Keep the same meaning - don't add or remove ideas
+5. Preserve proper nouns and spiritual tone
 
-Bad (literal): "Yes, I make a record"
-Good (natural): "I make a record"
+Output ONLY the modernized verse text.`;
 
-MAINTAIN REVERENCE AND MEANING:
-- This is sacred scripture - maintain the spiritual tone
-- Preserve all doctrinal content and meaning
-- Keep proper nouns (names, places) unchanged
-- Do NOT add interpretation or commentary
-- Output ONLY the rewritten text, no explanations`;
+// ============================================================================
+// TYPES
+// ============================================================================
 
 export interface AITransformResult {
   original: string;
@@ -49,13 +56,13 @@ interface TransformOptions {
   bookName?: string;
   chapterNumber?: number;
   verseNumber?: number;
-  previousVerse?: string;
-  nextVerse?: string;
+  model?: string; // Optional model override (defaults to gpt-4.1)
 }
 
-/**
- * Retry mechanism with exponential backoff for rate limits
- */
+// ============================================================================
+// RETRY HELPER - Handles rate limits with exponential backoff
+// ============================================================================
+
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
   maxRetries: number = 3,
@@ -77,188 +84,56 @@ async function retryWithBackoff<T>(
       }
 
       const delay = initialDelay * Math.pow(2, attempt);
-      console.warn(`Rate limit hit, retrying in ${delay}ms... (attempt ${attempt + 1}/${maxRetries})`);
+      console.warn(
+        `Rate limit hit, retrying in ${delay}ms... (attempt ${
+          attempt + 1
+        }/${maxRetries})`
+      );
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
   throw new Error("Max retries exceeded");
 }
 
+// ============================================================================
+// MAIN TRANSLATION FUNCTION - Translates one verse at a time
+// ============================================================================
+
 export async function aiTransformVerse(
   verse: string,
   options: TransformOptions = {}
 ): Promise<AITransformResult> {
-  const { bookName, chapterNumber, verseNumber, previousVerse, nextVerse } = options;
+  const { bookName, chapterNumber, verseNumber, model = MODEL } = options;
 
-  // Build context-aware user message
+  // Build the user message with context about which verse this is
   let userMessage = "";
-  
   if (bookName && chapterNumber !== undefined && verseNumber !== undefined) {
-    userMessage += `Here is verse ${verseNumber} of ${bookName} Chapter ${chapterNumber}:\n\n`;
-  } else {
-    userMessage += "Here is a verse to translate:\n\n";
+    userMessage += `${bookName} ${chapterNumber}:${verseNumber}\n\n`;
   }
-
-  if (previousVerse) {
-    userMessage += `Previous verse: ${previousVerse}\n\n`;
-  }
-
   userMessage += `"${verse}"`;
 
-  if (nextVerse) {
-    userMessage += `\n\nNext verse: ${nextVerse}`;
-  }
-
-  userMessage += "\n\nTranslate this verse naturally into modern English:";
-
-  try {
-    const response = await retryWithBackoff(async () => {
-      return await openai.chat.completions.create({
-        model: "gpt-4o-mini", // Using gpt-4o-mini as gpt-5-mini may not be available yet
-        messages: [
-          {
-            role: "system",
-            content: SYSTEM_PROMPT,
-          },
-          {
-            role: "user",
-            content: userMessage,
-          },
-        ],
-        max_tokens: 1024,
-        temperature: 0.3, // Lower temperature for more consistent, faithful translations
-      });
+  // Make the API call with retry logic for rate limits
+  const response = await retryWithBackoff(async () => {
+    return await getOpenAIClient().chat.completions.create({
+      model: model,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userMessage },
+      ],
+      max_tokens: 1024,
+      temperature: 0.5,
     });
+  });
 
-    const transformed =
-      response.choices[0]?.message?.content?.replace(/^["']|["']$/g, "").trim() || verse;
+  // Clean up the response (remove surrounding quotes, fix whitespace/punctuation)
+  const rawOutput = response.choices[0]?.message?.content || verse;
+  const cleaned = postProcessTranslation(
+    rawOutput.replace(/^["']|["']$/g, "").trim()
+  );
 
-    // Apply light post-processing
-    const cleaned = postProcessTranslation(transformed);
-
-    return {
-      original: verse,
-      transformed: cleaned,
-      cached: false,
-    };
-  } catch (error) {
-    console.error("Error transforming verse:", error);
-    // Fall back to original text on error
-    return {
-      original: verse,
-      transformed: verse,
-      cached: false,
-    };
-  }
-}
-
-export async function aiTransformChapter(
-  verses: { number: number; text: string }[],
-  options: { bookName?: string; chapterNumber?: number } = {}
-): Promise<{ number: number; text: string; plainText: string }[]> {
-  const results: { number: number; text: string; plainText: string }[] = [];
-
-  for (let i = 0; i < verses.length; i++) {
-    const verse = verses[i];
-    const previousVerse = i > 0 ? verses[i - 1].text : undefined;
-    const nextVerse = i < verses.length - 1 ? verses[i + 1].text : undefined;
-
-    try {
-      const result = await aiTransformVerse(verse.text, {
-        bookName: options.bookName,
-        chapterNumber: options.chapterNumber,
-        verseNumber: verse.number,
-        previousVerse,
-        nextVerse,
-      });
-      results.push({
-        number: verse.number,
-        text: verse.text,
-        plainText: result.transformed,
-      });
-    } catch (error) {
-      console.error(`Error transforming verse ${verse.number}:`, error);
-      // Fall back to original text on error
-      results.push({
-        number: verse.number,
-        text: verse.text,
-        plainText: verse.text,
-      });
-    }
-  }
-
-  return results;
-}
-
-// Batch transform multiple verses in a single API call for efficiency
-export async function aiTransformVersesBatch(
-  verses: { number: number; text: string }[],
-  options: { bookName?: string; chapterNumber?: number } = {}
-): Promise<{ number: number; text: string; plainText: string }[]> {
-  const versesText = verses
-    .map((v) => `[${v.number}] ${v.text}`)
-    .join("\n\n");
-
-  let userMessage = "";
-  if (options.bookName && options.chapterNumber !== undefined) {
-    userMessage += `Here are verses from ${options.bookName} Chapter ${options.chapterNumber}:\n\n`;
-  } else {
-    userMessage += "Here are verses to translate:\n\n";
-  }
-  userMessage += versesText;
-  userMessage += "\n\nTranslate each verse naturally into modern English. Output each transformed verse on its own line, prefixed with the same [number].";
-
-  try {
-    const response = await retryWithBackoff(async () => {
-      return await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: SYSTEM_PROMPT + "\n\nYou will receive multiple verses, each prefixed with [number]. Output each transformed verse on its own line, prefixed with the same [number].",
-          },
-          {
-            role: "user",
-            content: userMessage,
-          },
-        ],
-        max_tokens: 4096,
-        temperature: 0.3,
-      });
-    });
-
-    const responseText = response.choices[0]?.message?.content || "";
-    const lines = responseText.split("\n").filter((line) => line.trim());
-
-    // Parse the response
-    const results: { number: number; text: string; plainText: string }[] = [];
-
-    for (const verse of verses) {
-      const pattern = new RegExp(`\\[${verse.number}\\]\\s*(.+)`, "i");
-      const match = lines.find((line) => pattern.test(line));
-
-      if (match) {
-        const transformed = match.replace(pattern, "$1").trim();
-        const cleaned = postProcessTranslation(transformed);
-        results.push({
-          number: verse.number,
-          text: verse.text,
-          plainText: cleaned,
-        });
-      } else {
-        // Fall back to original if parsing fails
-        results.push({
-          number: verse.number,
-          text: verse.text,
-          plainText: verse.text,
-        });
-      }
-    }
-
-    return results;
-  } catch (error) {
-    console.error("Error in batch transformation:", error);
-    // Fall back to individual transformations
-    return aiTransformChapter(verses, options);
-  }
+  return {
+    original: verse,
+    transformed: cleaned,
+    cached: false,
+  };
 }

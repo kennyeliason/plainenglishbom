@@ -1,5 +1,9 @@
-import * as fs from "fs";
+// Load environment variables from .env.local
+import * as dotenv from "dotenv";
 import * as path from "path";
+dotenv.config({ path: path.join(process.cwd(), ".env.local") });
+
+import * as fs from "fs";
 import type { BookOfMormon, Book, Chapter, Verse } from "../src/lib/types";
 import { applyRuleBasedTransform } from "../src/lib/transform-rules";
 import { aiTransformVerse } from "../src/lib/ai-transform";
@@ -75,8 +79,7 @@ async function transformVerse(
   options: {
     bookName?: string;
     chapterNumber?: number;
-    previousVerse?: string;
-    nextVerse?: string;
+    // previousVerse and nextVerse removed - they cause verse bleed
   } = {}
 ): Promise<string> {
   if (mode === "rules") {
@@ -86,8 +89,7 @@ async function transformVerse(
       bookName: options.bookName,
       chapterNumber: options.chapterNumber,
       verseNumber: verse.number,
-      previousVerse: options.previousVerse,
-      nextVerse: options.nextVerse,
+      // previousVerse and nextVerse intentionally not passed
     });
     return result.transformed;
   } else {
@@ -95,7 +97,12 @@ async function transformVerse(
     const ruleTransformed = applyRuleBasedTransform(verse.text);
     // Only use AI if the text is still complex
     if (ruleTransformed.length > 100 || ruleTransformed.includes(";")) {
-      const result = await aiTransformVerse(ruleTransformed, options);
+      const result = await aiTransformVerse(ruleTransformed, {
+        bookName: options.bookName,
+        chapterNumber: options.chapterNumber,
+        verseNumber: verse.number,
+        // previousVerse and nextVerse intentionally not passed
+      });
       return result.transformed;
     }
     return ruleTransformed;
@@ -132,8 +139,7 @@ async function transformChapter(
       const plainText = await transformVerse(verse, mode, {
         bookName: book.shortName,
         chapterNumber: chapter.number,
-        previousVerse,
-        nextVerse,
+        // previousVerse and nextVerse removed - they cause verse bleed
       });
       transformedVerses.push({
         ...verse,
@@ -141,22 +147,22 @@ async function transformChapter(
       });
     } catch (error) {
       console.error(
-        `\nError transforming ${book.shortName} ${chapter.number}:${verse.number}:`,
-        error
+        `\n❌ FAILED to transform ${book.shortName} ${chapter.number}:${verse.number}:`,
+        error instanceof Error ? error.message : String(error)
       );
+      // Mark as failed - don't silently use original text
       transformedVerses.push({
         ...verse,
-        plainText: mode === "rules" ? applyRuleBasedTransform(verse.text) : verse.text,
+        plainText: `[TRANSLATION FAILED: ${
+          error instanceof Error ? error.message : String(error)
+        }]`,
       });
     }
 
     processedVerses++;
     printProgress(book.shortName, chapter.number, verse.number);
 
-    // Add small delay for AI mode to avoid rate limits
-    if (mode === "ai" || mode === "combined") {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    }
+    // Note: No delay needed - retry logic with exponential backoff handles rate limits
   }
 
   return {
@@ -234,7 +240,8 @@ function parseArgs(): {
 }
 
 async function main() {
-  const { mode, regenerate, regenerateBook, regenerateChapter, bookFilter } = parseArgs();
+  const { mode, regenerate, regenerateBook, regenerateChapter, bookFilter } =
+    parseArgs();
 
   console.log(`Transformation mode: ${mode} (default is AI)`);
   if (regenerate) {
@@ -283,13 +290,17 @@ async function main() {
       process.exit(1);
     }
 
-    let transformedBook = transformed.books.find((b) => b.shortName === bookName);
+    let transformedBook = transformed.books.find(
+      (b) => b.shortName === bookName
+    );
     if (!transformedBook) {
       transformedBook = { ...book, chapters: [] };
       transformed.books.push(transformedBook);
     }
 
-    const existingChapter = transformedBook.chapters.find((c) => c.number === chapterNum);
+    const existingChapter = transformedBook.chapters.find(
+      (c) => c.number === chapterNum
+    );
     const transformedChapter = await transformChapter(
       chapter,
       book,
@@ -298,7 +309,9 @@ async function main() {
       true // regenerate
     );
 
-    const chapterIndex = transformedBook.chapters.findIndex((c) => c.number === chapterNum);
+    const chapterIndex = transformedBook.chapters.findIndex(
+      (c) => c.number === chapterNum
+    );
     if (chapterIndex >= 0) {
       transformedBook.chapters[chapterIndex] = transformedChapter;
     } else {
@@ -323,13 +336,19 @@ async function main() {
       continue;
     }
 
-    const shouldRegenerate = regenerate || (regenerateBook && regenerateBook === book.shortName);
+    const shouldRegenerate =
+      regenerate || (regenerateBook && regenerateBook === book.shortName);
 
     console.log(`\nTransforming ${book.shortName}...`);
     const existingBook = transformed.books.find(
       (b) => b.shortName === book.shortName
     );
-    const transformedBook = await transformBook(book, mode, existingBook, shouldRegenerate);
+    const transformedBook = await transformBook(
+      book,
+      mode,
+      existingBook,
+      shouldRegenerate
+    );
 
     // Update or add the transformed book
     const existingIndex = transformed.books.findIndex(
@@ -347,7 +366,9 @@ async function main() {
   }
 
   console.log("\n\n=== Transformation Complete ===");
-  console.log(`Total verses transformed: ${countTransformedVerses(transformed)}`);
+  console.log(
+    `Total verses transformed: ${countTransformedVerses(transformed)}`
+  );
   console.log(`Output saved to: ${TRANSFORMED_PATH}`);
 }
 

@@ -11,11 +11,12 @@
     "transform": "tsx scripts/transform-text.ts",
     "transform:rules": "tsx scripts/transform-text.ts rules",
     "transform:ai": "tsx scripts/transform-text.ts ai",
-    "transform:regenerate": "tsx scripts/transform-text.ts --regenerate"
+    "transform:regenerate": "tsx scripts/transform-text.ts --regenerate",
+    "test:models": "tsx scripts/test-models.ts"
   },
   "dependencies": {
     "next": "16.1.1",
-    "openai": "^4.0.0",
+    "openai": "^4.104.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -24,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
