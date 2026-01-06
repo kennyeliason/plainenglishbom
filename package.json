@@ -10,11 +10,12 @@
     "parse": "tsx scripts/parse-gutenberg.ts",
     "transform": "tsx scripts/transform-text.ts",
     "transform:rules": "tsx scripts/transform-text.ts rules",
-    "transform:ai": "tsx scripts/transform-text.ts ai"
+    "transform:ai": "tsx scripts/transform-text.ts ai",
+    "transform:regenerate": "tsx scripts/transform-text.ts --regenerate"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.71.2",
     "next": "16.1.1",
+    "openai": "^4.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

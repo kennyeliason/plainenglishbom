@@ -1,5 +1,19 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllBooks, slugify } from "@/lib/data";
+import { generatePageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  ...generatePageMetadata({
+    title: "Book of Mormon in Plain English - Modern Translation",
+    description:
+      "The Book of Mormon translated into clear, modern English while preserving its original meaning and spiritual power. Read all 15 books with natural, accessible language.",
+    path: "/",
+  }),
+  title: {
+    absolute: "Book of Mormon in Plain English - Modern Translation",
+  },
+};
 
 export default function HomePage() {
   const books = getAllBooks();

@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBook, getBookSlugs, slugify, unslugify } from "@/lib/data";
+import { generatePageMetadata, generateBookSchema, generateBreadcrumbSchema } from "@/lib/seo";
+import { StructuredData } from "@/components/StructuredData";
 
 interface BookPageProps {
   params: Promise<{ book: string }>;
@@ -8,6 +11,25 @@ interface BookPageProps {
 
 export function generateStaticParams() {
   return getBookSlugs().map((book) => ({ book }));
+}
+
+export async function generateMetadata({ params }: BookPageProps): Promise<Metadata> {
+  const { book: bookSlug } = await params;
+  const bookName = unslugify(bookSlug);
+  const book = getBook(bookName);
+
+  if (!book) {
+    return {};
+  }
+
+  const totalVerses = book.chapters.reduce((sum, ch) => sum + ch.verses.length, 0);
+  const description = `${book.shortName} from the Book of Mormon in plain English. ${book.chapters.length} chapter${book.chapters.length !== 1 ? "s" : ""}, ${totalVerses.toLocaleString()} verses. Read scripture in modern, accessible language.`;
+
+  return generatePageMetadata({
+    title: `${book.shortName} - Plain English Book of Mormon`,
+    description,
+    path: `/${slugify(book.shortName)}`,
+  });
 }
 
 export default async function BookPage({ params }: BookPageProps) {
@@ -24,8 +46,22 @@ export default async function BookPage({ params }: BookPageProps) {
     0
   );
 
+  const bookSchema = generateBookSchema({
+    name: book.shortName,
+    numberOfPages: book.chapters.length,
+    about: `${book.shortName} from the Book of Mormon, translated into plain English`,
+    isPartOf: "The Book of Mormon",
+  });
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: book.shortName, url: `/${slugify(book.shortName)}` },
+  ]);
+
   return (
-    <div className="animate-fade-in">
+    <>
+      <StructuredData data={[bookSchema, breadcrumbSchema]} />
+      <div className="animate-fade-in">
       {/* Breadcrumb */}
       <nav className="mb-8">
         <Link
@@ -146,5 +182,6 @@ export default async function BookPage({ params }: BookPageProps) {
         </Link>
       </div>
     </div>
+    </>
   );
 }

@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Source_Serif_4 } from "next/font/google";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { StructuredData } from "@/components/StructuredData";
+import {
+  generateOrganizationSchema,
+  generateWebSiteSchema,
+} from "@/lib/seo";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -19,8 +24,13 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "Plain English Book of Mormon",
-  description: "The Book of Mormon translated into clear, modern English while preserving its original meaning and spiritual power.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://plainenglishbom.com"),
+  title: {
+    default: "Plain English Book of Mormon",
+    template: "%s | Plain English Book of Mormon",
+  },
+  description:
+    "The Book of Mormon translated into clear, modern English while preserving its original meaning and spiritual power.",
 };
 
 export default function RootLayout({
@@ -45,9 +55,13 @@ export default function RootLayout({
             `,
           }}
         />
+        <StructuredData
+          data={[generateOrganizationSchema(), generateWebSiteSchema()]}
+        />
       </head>
       <body
         className={`${cormorant.variable} ${sourceSerif.variable} antialiased`}
+        suppressHydrationWarning
       >
         <header
           className="sticky top-0 z-50 backdrop-blur-md"

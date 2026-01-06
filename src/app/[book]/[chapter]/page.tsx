@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -7,6 +8,13 @@ import {
   slugify,
   unslugify,
 } from "@/lib/data";
+import {
+  generatePageMetadata,
+  generateChapterSchema,
+  generateArticleSchema,
+  generateBreadcrumbSchema,
+} from "@/lib/seo";
+import { StructuredData } from "@/components/StructuredData";
 
 interface ChapterPageProps {
   params: Promise<{ book: string; chapter: string }>;
@@ -27,6 +35,32 @@ export function generateStaticParams() {
   return params;
 }
 
+export async function generateMetadata({ params }: ChapterPageProps): Promise<Metadata> {
+  const { book: bookSlug, chapter: chapterStr } = await params;
+  const bookName = unslugify(bookSlug);
+  const chapterNum = parseInt(chapterStr, 10);
+
+  const book = getBook(bookName);
+  const chapter = getChapter(bookName, chapterNum);
+
+  if (!book || !chapter) {
+    return {};
+  }
+
+  // Get preview text from first verse
+  const previewText = chapter.verses[0]?.plainText || chapter.verses[0]?.text || "";
+  const preview = previewText.length > 150 ? previewText.substring(0, 150) + "..." : previewText;
+
+  const description = `${book.shortName} Chapter ${chapterNum} in plain English. ${chapter.verses.length} verses. ${preview}`;
+
+  return generatePageMetadata({
+    title: `${book.shortName} Chapter ${chapterNum} - Plain English`,
+    description,
+    path: `/${slugify(book.shortName)}/${chapterNum}`,
+    type: "article",
+  });
+}
+
 export default async function ChapterPage({ params }: ChapterPageProps) {
   const { book: bookSlug, chapter: chapterStr } = await params;
   const bookName = unslugify(bookSlug);
@@ -43,8 +77,39 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   const nextChapter =
     chapterNum < book.chapters.length ? chapterNum + 1 : null;
 
+  // Generate schema markup
+  const chapterSchema = generateChapterSchema({
+    name: `${book.shortName} Chapter ${chapter.number}`,
+    position: chapter.number,
+    isPartOf: {
+      "@type": "Book",
+      name: book.shortName,
+    },
+    hasPart: chapter.verses.map((verse) => ({
+      "@type": "Verse",
+      name: `Verse ${verse.number}`,
+    })),
+  });
+
+  const articleSchema = generateArticleSchema({
+    headline: `${book.shortName} Chapter ${chapter.number}`,
+    description: `${book.shortName} Chapter ${chapter.number} in plain English with ${chapter.verses.length} verses`,
+    author: {
+      "@type": "Organization",
+      name: "Plain English Book of Mormon",
+    },
+  });
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: book.shortName, url: `/${slugify(book.shortName)}` },
+    { name: `Chapter ${chapter.number}`, url: `/${slugify(book.shortName)}/${chapter.number}` },
+  ]);
+
   return (
-    <div className="animate-fade-in">
+    <>
+      <StructuredData data={[chapterSchema, articleSchema, breadcrumbSchema]} />
+      <div className="animate-fade-in">
       {/* Top Navigation */}
       <nav className="mb-8 flex items-center justify-between">
         <Link
@@ -295,5 +360,6 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
         </Link>
       </div>
     </div>
+    </>
   );
 }
