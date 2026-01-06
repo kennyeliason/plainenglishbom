@@ -211,7 +211,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             {chapter.verses.length} verses
           </span>
         </p>
-        {comparison && (
+        {/* Compare Models button - hidden for 1 Nephi, but logic kept for future testing */}
+        {comparison && book.shortName !== "1 Nephi" && (
           <div className="mt-4">
             <Link
               href={`/compare/${bookSlug}/${chapterNum}`}

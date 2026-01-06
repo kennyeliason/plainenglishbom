@@ -52,10 +52,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
         priority: 0.7,
       });
 
-      // Add comparison page if it exists
+      // Add comparison page if it exists (excluding 1 Nephi for now)
       // Match by book name (with spaces) and chapter number
       const comparisonKey = `${book.shortName}-${chapter.number}`;
-      if (comparisonMap.has(comparisonKey)) {
+      if (comparisonMap.has(comparisonKey) && book.shortName !== "1 Nephi") {
         const compareUrl = `${baseUrl}/compare/${bookSlug}/${chapter.number}`;
 
         urls.push({
