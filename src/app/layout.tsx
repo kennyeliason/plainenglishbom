@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Source_Serif_4 } from "next/font/google";
+import Script from "next/script";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StructuredData } from "@/components/StructuredData";
-import {
-  generateOrganizationSchema,
-  generateWebSiteSchema,
-} from "@/lib/seo";
+import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -24,7 +23,9 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://plainenglishbom.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://plainenglishbom.com"
+  ),
   title: {
     default: "Plain English Book of Mormon",
     template: "%s | Plain English Book of Mormon",
@@ -41,35 +42,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Google Analytics - Added immediately after <head> as recommended by Google */}
-        <script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-2B944CWJX8"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-2B944CWJX8');
-            `,
-          }}
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var theme = localStorage.getItem('theme');
-                  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
-        />
         <StructuredData
           data={[generateOrganizationSchema(), generateWebSiteSchema()]}
         />
@@ -78,6 +50,8 @@ export default function RootLayout({
         className={`${cormorant.variable} ${sourceSerif.variable} antialiased`}
         suppressHydrationWarning
       >
+        {/* Theme initialization - runs before page becomes interactive to prevent flash */}
+        <Script src="/theme-init.js" strategy="beforeInteractive" />
         <header
           className="sticky top-0 z-50 backdrop-blur-md"
           style={{
@@ -177,6 +151,8 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        {/* Google Analytics - Using official Next.js @next/third-parties package */}
+        <GoogleAnalytics gaId="G-2B944CWJX8" />
       </body>
     </html>
   );
