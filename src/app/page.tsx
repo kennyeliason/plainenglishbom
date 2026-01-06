@@ -1,65 +1,188 @@
-import Image from "next/image";
+import Link from "next/link";
+import { getAllBooks, slugify } from "@/lib/data";
 
-export default function Home() {
+export default function HomePage() {
+  const books = getAllBooks();
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="animate-fade-in">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <h1
+          className="text-5xl sm:text-6xl mb-6"
+          style={{
+            fontFamily: "var(--font-cormorant), serif",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          The Book of Mormon
+        </h1>
+        <p className="decorative-rule mb-6">
+          <span
+            style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontSize: "1.25rem",
+              color: "var(--color-accent)",
+            }}
+          >
+            In Plain English
+          </span>
+        </p>
+        <p
+          className="text-lg max-w-2xl mx-auto leading-relaxed"
+          style={{ color: "var(--color-text-secondary)" }}
+        >
+          Scripture translated into clear, modern language while preserving its
+          original meaning and spiritual power. Read the ancient text as it was
+          meant to be understood.
+        </p>
+      </div>
+
+      {/* Books Grid */}
+      <div className="mb-16">
+        <h2
+          className="text-sm uppercase tracking-widest mb-8 text-center"
+          style={{
+            color: "var(--color-text-muted)",
+            fontFamily: "var(--font-source-serif), serif",
+            fontWeight: 500,
+          }}
+        >
+          Select a Book
+        </h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
+          {books.map((book) => {
+            const verseCount = book.chapters.reduce(
+              (sum, ch) => sum + ch.verses.length,
+              0
+            );
+            return (
+              <Link
+                key={book.shortName}
+                href={`/${slugify(book.shortName)}`}
+                className="book-card group block p-6 rounded-xl"
+                style={{
+                  background: "var(--color-bg-tertiary)",
+                  border: "1px solid var(--color-border)",
+                  boxShadow: "var(--shadow-sm)",
+                }}
+              >
+                <div className="relative z-10">
+                  <h2
+                    className="text-xl mb-2 group-hover:text-[var(--color-accent)] transition-colors"
+                    style={{
+                      fontFamily: "var(--font-cormorant), serif",
+                      fontWeight: 600,
+                      color: "var(--color-text-primary)",
+                    }}
+                  >
+                    {book.shortName}
+                  </h2>
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--color-text-tertiary)" }}
+                  >
+                    {book.chapters.length} chapter
+                    {book.chapters.length !== 1 ? "s" : ""}
+                    <span
+                      className="mx-2"
+                      style={{ color: "var(--color-border-strong)" }}
+                    >
+                      ·
+                    </span>
+                    {verseCount.toLocaleString()} verses
+                  </p>
+                  <div
+                    className="mt-4 flex items-center text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ color: "var(--color-accent)" }}
+                  >
+                    <span>Begin reading</span>
+                    <svg
+                      className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* About Section */}
+      <div className="about-section">
+        <h2
+          className="text-2xl mb-4"
+          style={{
+            fontFamily: "var(--font-cormorant), serif",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+          }}
+        >
+          About This Translation
+        </h2>
+        <div
+          className="space-y-4 leading-relaxed"
+          style={{ color: "var(--color-text-secondary)" }}
+        >
+          <p>
+            This project presents the Book of Mormon with its archaic King James
+            English carefully converted to plain, modern language. Phrases like{" "}
+            <em
+              style={{
+                color: "var(--color-text-tertiary)",
+                fontStyle: "italic",
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              &ldquo;it came to pass&rdquo;
+            </em>{" "}
+            are simplified, and pronouns like{" "}
+            <em
+              style={{
+                color: "var(--color-text-tertiary)",
+                fontStyle: "italic",
+              }}
             >
-              Learning
-            </a>{" "}
-            center.
+              thee
+            </em>
+            ,{" "}
+            <em
+              style={{
+                color: "var(--color-text-tertiary)",
+                fontStyle: "italic",
+              }}
+            >
+              thou
+            </em>
+            , and{" "}
+            <em
+              style={{
+                color: "var(--color-text-tertiary)",
+                fontStyle: "italic",
+              }}
+            >
+              ye
+            </em>{" "}
+            are updated to their modern equivalents.
+          </p>
+          <p>
+            The goal is accessibility without sacrificing substance—making these
+            ancient teachings approachable for contemporary readers while
+            honoring the sacred nature of the text.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
