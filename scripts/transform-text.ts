@@ -131,10 +131,6 @@ async function transformChapter(
       continue;
     }
 
-    const previousVerse = i > 0 ? chapter.verses[i - 1]?.text : undefined;
-    const nextVerse =
-      i < chapter.verses.length - 1 ? chapter.verses[i + 1]?.text : undefined;
-
     try {
       const plainText = await transformVerse(verse, mode, {
         bookName: book.shortName,
@@ -175,7 +171,8 @@ async function transformBook(
   book: Book,
   mode: TransformMode,
   existing?: Book,
-  regenerate: boolean = false
+  regenerate: boolean = false,
+  onChapterComplete?: (chapter: Chapter) => void // Callback to save after each chapter
 ): Promise<Book> {
   const transformedChapters: Chapter[] = [];
 
@@ -191,6 +188,11 @@ async function transformBook(
       regenerate
     );
     transformedChapters.push(transformedChapter);
+
+    // Call the save callback after each chapter completes
+    if (onChapterComplete) {
+      onChapterComplete(transformedChapter);
+    }
   }
 
   return {
@@ -207,7 +209,7 @@ function parseArgs(): {
   bookFilter?: string;
 } {
   const args = process.argv.slice(2);
-  let mode: TransformMode = "ai"; // Default to AI
+  const mode: TransformMode = "ai"; // Default to AI
   const result: {
     mode: TransformMode;
     regenerate?: boolean;
@@ -337,32 +339,48 @@ async function main() {
     }
 
     const shouldRegenerate =
-      regenerate || (regenerateBook && regenerateBook === book.shortName);
+      !!regenerate || regenerateBook === book.shortName;
 
     console.log(`\nTransforming ${book.shortName}...`);
     const existingBook = transformed.books.find(
       (b) => b.shortName === book.shortName
     );
+
+    // Ensure the book exists in transformed data (so we can update chapters incrementally)
+    let bookIndex = transformed.books.findIndex(
+      (b) => b.shortName === book.shortName
+    );
+    if (bookIndex < 0) {
+      transformed.books.push({ ...book, chapters: [] });
+      bookIndex = transformed.books.length - 1;
+    }
+
     const transformedBook = await transformBook(
       book,
       mode,
       existingBook,
-      shouldRegenerate
+      shouldRegenerate,
+      // Save after each chapter completes
+      (completedChapter) => {
+        // Update or add the chapter in the book
+        const chapterIndex = transformed.books[bookIndex].chapters.findIndex(
+          (c) => c.number === completedChapter.number
+        );
+        if (chapterIndex >= 0) {
+          transformed.books[bookIndex].chapters[chapterIndex] = completedChapter;
+        } else {
+          transformed.books[bookIndex].chapters.push(completedChapter);
+        }
+        // Save to disk
+        saveTransformed(transformed);
+        console.log(`  💾 Saved ${book.shortName} chapter ${completedChapter.number}`);
+      }
     );
 
-    // Update or add the transformed book
-    const existingIndex = transformed.books.findIndex(
-      (b) => b.shortName === book.shortName
-    );
-    if (existingIndex >= 0) {
-      transformed.books[existingIndex] = transformedBook;
-    } else {
-      transformed.books.push(transformedBook);
-    }
-
-    // Save progress after each book
+    // Update the full book (ensures chapter order is correct)
+    transformed.books[bookIndex] = transformedBook;
     saveTransformed(transformed);
-    console.log(`\nSaved progress for ${book.shortName}`);
+    console.log(`\n✅ Completed ${book.shortName}`);
   }
 
   console.log("\n\n=== Transformation Complete ===");
