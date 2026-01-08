@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getBook, getBookSlugs, slugify, unslugify } from "@/lib/data";
 import { generatePageMetadata, generateBookSchema, generateBreadcrumbSchema } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
@@ -39,6 +39,11 @@ export default async function BookPage({ params }: BookPageProps) {
 
   if (!book) {
     notFound();
+  }
+
+  // Redirect single-chapter books directly to chapter 1
+  if (book.chapters.length === 1) {
+    redirect(`/${slugify(book.shortName)}/1`);
   }
 
   const totalVerses = book.chapters.reduce(
