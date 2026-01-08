@@ -53,6 +53,7 @@ export default function RootLayout({
       >
         {/* Theme initialization - runs before page becomes interactive to prevent flash */}
         <Script src="/theme-init.js" strategy="beforeInteractive" />
+        <div className="w-full overflow-x-hidden">
         <header
           className="sticky top-0 z-50 backdrop-blur-md w-full max-w-full overflow-x-hidden"
           style={{
@@ -150,6 +151,7 @@ export default function RootLayout({
             </div>
           </div>
         </footer>
+        </div>
         {/* Google Analytics - Using official Next.js @next/third-parties package */}
         <GoogleAnalytics gaId="G-2B944CWJX8" />
       </body>

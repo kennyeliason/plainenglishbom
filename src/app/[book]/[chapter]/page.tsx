@@ -290,13 +290,13 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
 
       {/* Bottom Navigation */}
       <nav
-        className="mt-16 pt-8 flex items-center justify-between"
+        className="mt-16 pt-8 flex items-center justify-between overflow-hidden"
         style={{ borderTop: "1px solid var(--color-border)" }}
       >
         {prevChapter ? (
           <Link
             href={`/${slugify(book.shortName)}/${prevChapter}`}
-            className="group flex items-center gap-3 p-4 -m-4 rounded-lg transition-colors"
+            className="group flex items-center gap-3 py-2 rounded-lg transition-colors"
             style={{ color: "var(--color-text-secondary)" }}
           >
             <svg
@@ -334,7 +334,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
         {nextChapter && (
           <Link
             href={`/${slugify(book.shortName)}/${nextChapter}`}
-            className="group flex items-center gap-3 p-4 -m-4 rounded-lg transition-colors text-right"
+            className="group flex items-center gap-3 py-2 rounded-lg transition-colors text-right"
             style={{ color: "var(--color-text-secondary)" }}
           >
             <div>
