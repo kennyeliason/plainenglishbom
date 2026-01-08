@@ -55,7 +55,7 @@ export default function RootLayout({
         <Script src="/theme-init.js" strategy="beforeInteractive" />
         <div className="w-full overflow-x-hidden">
         <header
-          className="sticky top-0 z-50 backdrop-blur-md w-full max-w-full overflow-x-hidden"
+          className="sticky top-0 z-50 backdrop-blur-md"
           style={{
             background: "var(--color-header-bg)",
             borderBottom: "1px solid var(--color-border)",

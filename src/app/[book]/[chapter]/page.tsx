@@ -183,8 +183,6 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
 
       {/* Chapter Header */}
       <header className="text-center mb-12">
-        {/* DEBUG: Remove after fixing scroll */}
-        <p className="text-xs text-red-500 mb-4">Build: Jan 7 10:45pm</p>
         <p
           className="text-sm uppercase tracking-widest mb-2"
           style={{
