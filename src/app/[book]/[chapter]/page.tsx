@@ -135,11 +135,11 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           </svg>
           <span>{book.shortName}</span>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {prevChapter && (
             <Link
               href={`/${slugify(book.shortName)}/${prevChapter}`}
-              className="nav-link text-sm hidden sm:inline-flex items-center gap-1"
+              className="nav-link text-sm inline-flex items-center gap-1"
             >
               <svg
                 className="w-3 h-3"
@@ -154,15 +154,15 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
                   d="M15 19l-7-7 7-7"
                 />
               </svg>
-              <span>Chapter {prevChapter}</span>
+              <span className="hidden sm:inline">Chapter</span> <span>{prevChapter}</span>
             </Link>
           )}
           {nextChapter && (
             <Link
               href={`/${slugify(book.shortName)}/${nextChapter}`}
-              className="nav-link text-sm hidden sm:inline-flex items-center gap-1"
+              className="nav-link text-sm inline-flex items-center gap-1"
             >
-              <span>Chapter {nextChapter}</span>
+              <span className="hidden sm:inline">Chapter</span> <span>{nextChapter}</span>
               <svg
                 className="w-3 h-3"
                 fill="none"
