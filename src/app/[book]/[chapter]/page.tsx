@@ -117,7 +117,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
       {/* Top Navigation */}
       <nav className="mb-8 flex items-center justify-between">
         <Link
-          href={`/${slugify(book.shortName)}`}
+          href={book.chapters.length === 1 ? "/" : `/${slugify(book.shortName)}`}
           className="nav-link inline-flex items-center gap-2 text-sm"
         >
           <svg
@@ -133,7 +133,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          <span>{book.shortName}</span>
+          <span>{book.chapters.length === 1 ? "All Books" : book.shortName}</span>
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
           {prevChapter && (
@@ -369,29 +369,31 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
         )}
       </nav>
 
-      {/* Return to Chapter List */}
-      <div className="mt-12 text-center">
-        <Link
-          href={`/${slugify(book.shortName)}`}
-          className="inline-flex items-center gap-2 text-sm animated-underline"
-          style={{ color: "var(--color-text-tertiary)" }}
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
+      {/* Return to Chapter List - hide for single-chapter books */}
+      {book.chapters.length > 1 && (
+        <div className="mt-12 text-center">
+          <Link
+            href={`/${slugify(book.shortName)}`}
+            className="inline-flex items-center gap-2 text-sm animated-underline"
+            style={{ color: "var(--color-text-tertiary)" }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 6h16M4 10h16M4 14h16M4 18h16"
-            />
-          </svg>
-          <span>View all chapters</span>
-        </Link>
-      </div>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4 6h16M4 10h16M4 14h16M4 18h16"
+              />
+            </svg>
+            <span>View all chapters</span>
+          </Link>
+        </div>
+      )}
     </div>
     </>
   );
