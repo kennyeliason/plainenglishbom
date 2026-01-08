@@ -243,7 +243,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
       </header>
 
       {/* Verses */}
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-3xl mx-auto space-y-2">
         {chapter.verses.map((verse, index) => (
           <article
             key={verse.number}

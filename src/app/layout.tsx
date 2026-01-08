@@ -62,29 +62,27 @@ export default function RootLayout({
           <nav className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
             <Link
               href="/"
-              className="group flex items-center gap-2 sm:gap-3"
+              className="group flex flex-col"
               style={{ color: "var(--color-header-text)" }}
             >
               <span
-                className="text-lg sm:text-2xl"
+                className="text-lg sm:text-xl"
                 style={{
                   fontFamily: "var(--font-cormorant), serif",
                   fontWeight: 600,
                   letterSpacing: "-0.02em",
                 }}
               >
-                Plain English
+                Book of Mormon
               </span>
               <span
-                className="px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs uppercase tracking-widest rounded"
+                className="text-[10px] sm:text-xs tracking-wide"
                 style={{
-                  background: "var(--color-header-accent)",
-                  color: "var(--color-header-bg)",
+                  color: "var(--color-header-accent)",
                   fontFamily: "var(--font-source-serif), serif",
-                  fontWeight: 500,
                 }}
               >
-                Book of Mormon
+                In Plain English
               </span>
             </Link>
             <ThemeToggle />
