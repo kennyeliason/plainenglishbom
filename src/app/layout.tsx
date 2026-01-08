@@ -53,13 +53,13 @@ export default function RootLayout({
         {/* Theme initialization - runs before page becomes interactive to prevent flash */}
         <Script src="/theme-init.js" strategy="beforeInteractive" />
         <header
-          className="sticky top-0 z-50 backdrop-blur-md"
+          className="sticky top-0 z-50 backdrop-blur-md w-full max-w-full overflow-x-hidden"
           style={{
             background: "var(--color-header-bg)",
             borderBottom: "1px solid var(--color-border)",
           }}
         >
-          <nav className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <nav className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
             <Link
               href="/"
               className="group flex flex-col"
@@ -89,7 +89,7 @@ export default function RootLayout({
           </nav>
         </header>
 
-        <main className="max-w-5xl mx-auto px-6 py-12">{children}</main>
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">{children}</main>
 
         <footer
           className="mt-16"
@@ -98,7 +98,7 @@ export default function RootLayout({
             borderTop: "1px solid var(--color-border)",
           }}
         >
-          <div className="max-w-5xl mx-auto px-6 py-10">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="text-center sm:text-left">
                 <p
