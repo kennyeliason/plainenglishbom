@@ -9,11 +9,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = SITE_URL.replace(/\/$/, "");
   const urls: MetadataRoute.Sitemap = [];
 
-  // Home page - highest priority, change frequency daily
+  // Home page - highest priority
   urls.push({
     url: baseUrl,
-    lastModified: new Date(),
-    changeFrequency: "daily",
+    changeFrequency: "weekly",
     priority: 1.0,
   });
 
@@ -36,8 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     urls.push({
       url: bookUrl,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
+      changeFrequency: "monthly",
       priority: 0.8,
     });
 
@@ -47,7 +45,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
       urls.push({
         url: chapterUrl,
-        lastModified: new Date(),
         changeFrequency: "monthly",
         priority: 0.7,
       });
@@ -60,7 +57,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
         urls.push({
           url: compareUrl,
-          lastModified: new Date(),
           changeFrequency: "monthly",
           priority: 0.6,
         });

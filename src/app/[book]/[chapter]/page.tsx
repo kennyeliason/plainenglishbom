@@ -16,6 +16,8 @@ import {
   generateBreadcrumbSchema,
 } from "@/lib/seo";
 import { StructuredData } from "@/components/StructuredData";
+import { KeyboardNavigation } from "@/components/KeyboardNavigation";
+import { ReadingProgressTracker } from "@/components/ReadingProgress";
 
 interface ChapterPageProps {
   params: Promise<{ book: string; chapter: string }>;
@@ -110,9 +112,14 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
     { name: `Chapter ${chapter.number}`, url: `/${slugify(book.shortName)}/${chapter.number}` },
   ]);
 
+  const prevUrl = prevChapter ? `/${slugify(book.shortName)}/${prevChapter}` : null;
+  const nextUrl = nextChapter ? `/${slugify(book.shortName)}/${nextChapter}` : null;
+
   return (
     <>
       <StructuredData data={[chapterSchema, articleSchema, breadcrumbSchema]} />
+      <KeyboardNavigation prevUrl={prevUrl} nextUrl={nextUrl} />
+      <ReadingProgressTracker bookSlug={bookSlug} chapterNum={chapterNum} bookName={book.shortName} />
       <div className="animate-fade-in">
       {/* Top Navigation */}
       <nav className="mb-8 flex items-center justify-between">
@@ -247,7 +254,8 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
         {chapter.verses.map((verse, index) => (
           <article
             key={verse.number}
-            className="verse-card"
+            id={`v${verse.number}`}
+            className="verse-card scroll-mt-24"
             style={{
               animationDelay: `${Math.min(index * 30, 300)}ms`,
             }}

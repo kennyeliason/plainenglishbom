@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllBooks, slugify } from "@/lib/data";
 import { generatePageMetadata } from "@/lib/seo";
+import { ContinueReading } from "@/components/ContinueReading";
 
 export const metadata: Metadata = {
   ...generatePageMetadata({
@@ -53,6 +54,9 @@ export default function HomePage() {
           meant to be understood.
         </p>
       </div>
+
+      {/* Continue Reading */}
+      <ContinueReading />
 
       {/* Books Grid */}
       <div className="mb-16">

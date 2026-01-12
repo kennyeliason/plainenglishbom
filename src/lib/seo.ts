@@ -25,7 +25,7 @@ export function generatePageMetadata({
   type?: "website" | "article" | "book";
 }): Metadata {
   const canonicalUrl = path ? getCanonicalUrl(path) : getCanonicalUrl();
-  const ogImage = image || `${SITE_URL}/og-image.png`;
+  const ogImage = image || `${SITE_URL}/opengraph-image`;
 
   return {
     title,
@@ -79,14 +79,6 @@ export function generateWebSiteSchema() {
     name: SITE_NAME,
     description: SITE_DESCRIPTION,
     url: SITE_URL,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
-      },
-      "query-input": "required name=search_term_string",
-    },
   });
 }
 

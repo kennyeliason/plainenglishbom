@@ -5,6 +5,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { StructuredData } from "@/components/StructuredData";
+import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { generateOrganizationSchema, generateWebSiteSchema } from "@/lib/seo";
 import "./globals.css";
 
@@ -53,6 +54,17 @@ export default function RootLayout({
       >
         {/* Theme initialization - runs before page becomes interactive to prevent flash */}
         <Script src="/theme-init.js" strategy="beforeInteractive" />
+        {/* Skip to content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-md focus:outline-none"
+          style={{
+            background: "var(--color-accent)",
+            color: "white",
+          }}
+        >
+          Skip to content
+        </a>
         <div className="w-full overflow-x-hidden">
         <header
           className="sticky top-0 z-50 backdrop-blur-md"
@@ -91,7 +103,7 @@ export default function RootLayout({
           </nav>
         </header>
 
-        <main className="max-w-5xl mx-auto px-4 sm:px-6 py-12">{children}</main>
+        <main id="main-content" className="max-w-5xl mx-auto px-4 sm:px-6 py-12">{children}</main>
 
         <footer
           className="mt-16"
@@ -154,6 +166,8 @@ export default function RootLayout({
         </div>
         {/* Google Analytics - Using official Next.js @next/third-parties package */}
         <GoogleAnalytics gaId="G-2B944CWJX8" />
+        {/* Service Worker for offline support */}
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
