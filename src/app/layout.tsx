@@ -165,7 +165,9 @@ export default function RootLayout({
         </footer>
         </div>
         {/* Google Analytics - Using official Next.js @next/third-parties package */}
-        <GoogleAnalytics gaId="G-2B944CWJX8" />
+        {process.env.NODE_ENV === "production" && (
+          <GoogleAnalytics gaId="G-2B944CWJX8" />
+        )}
         {/* Service Worker for offline support */}
         <ServiceWorkerRegistration />
       </body>
