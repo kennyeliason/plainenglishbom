@@ -2,7 +2,7 @@
   "expo": {
     "name": "Plain English BOM",
     "slug": "plain-english-bom",
-    "version": "1.0.0",
+    "version": "2026.1.12",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "plainenglishbom",
@@ -35,6 +35,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "86551321-bf5c-443f-b35f-1b17f0d2dc56"
+      }
+    },
+    "owner": "kennyquilia"
   }
 }

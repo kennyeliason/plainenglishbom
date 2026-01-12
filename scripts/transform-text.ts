@@ -1,14 +1,22 @@
 // Load environment variables from .env.local
 import * as dotenv from "dotenv";
 import * as path from "path";
-dotenv.config({ path: path.join(process.cwd(), ".env.local") });
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const SCRIPT_DIR = __dirname;
+
+// Try multiple locations for .env.local
+dotenv.config({ path: path.join(SCRIPT_DIR, "../apps/web/.env.local") });
+dotenv.config({ path: path.join(SCRIPT_DIR, "../.env.local") });
 
 import * as fs from "fs";
-import type { BookOfMormon, Book, Chapter, Verse } from "../src/lib/types";
-import { applyRuleBasedTransform } from "../src/lib/transform-rules";
-import { aiTransformVerse } from "../src/lib/ai-transform";
+import type { BookOfMormon, Book, Chapter, Verse } from "../apps/web/src/lib/types";
+import { applyRuleBasedTransform } from "../apps/web/src/lib/transform-rules";
+import { aiTransformVerse } from "../apps/web/src/lib/ai-transform";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const DATA_DIR = path.join(SCRIPT_DIR, "../data");
 const ORIGINAL_PATH = path.join(DATA_DIR, "original/parsed.json");
 const TRANSFORMED_PATH = path.join(DATA_DIR, "transformed/parsed.json");
 

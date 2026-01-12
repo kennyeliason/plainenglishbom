@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getAllBooks, slugify } from "@/lib/data";
 import { generatePageMetadata } from "@/lib/seo";
 import { ContinueReading } from "@/components/ContinueReading";
+import { AppBanner } from "@/components/AppBanner";
 
 export const metadata: Metadata = {
   ...generatePageMetadata({
@@ -54,6 +55,9 @@ export default function HomePage() {
           meant to be understood.
         </p>
       </div>
+
+      {/* App Banner */}
+      <AppBanner />
 
       {/* Continue Reading */}
       <ContinueReading />

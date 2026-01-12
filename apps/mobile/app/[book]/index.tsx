@@ -33,9 +33,8 @@ export default function BookScreen() {
     <>
       <Stack.Screen options={{ title: book.shortName }} />
       <ScrollView style={styles.container}>
-        {/* Header */}
+        {/* Compact Header */}
         <View style={styles.header}>
-          <Text style={styles.title}>{book.shortName}</Text>
           <Text style={styles.subtitle}>
             {book.chapters.length} chapter{book.chapters.length !== 1 ? "s" : ""}
           </Text>
@@ -70,18 +69,14 @@ const createStyles = (isDark: boolean) =>
       backgroundColor: isDark ? "#1a1a1a" : "#faf9f6",
     },
     header: {
-      padding: 24,
-      alignItems: "center",
-    },
-    title: {
-      fontSize: 28,
-      fontWeight: "600",
-      color: isDark ? "#faf9f6" : "#1a1a1a",
-      marginBottom: 8,
+      paddingHorizontal: 16,
+      paddingTop: 12,
+      paddingBottom: 8,
     },
     subtitle: {
-      fontSize: 14,
+      fontSize: 13,
       color: isDark ? "#888" : "#666",
+      letterSpacing: 0.5,
     },
     chaptersContainer: {
       flexDirection: "row",

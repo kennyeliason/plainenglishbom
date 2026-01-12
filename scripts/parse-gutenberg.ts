@@ -1,6 +1,32 @@
 import * as fs from "fs";
 import * as path from "path";
-import type { Book, Chapter, Verse, BookOfMormon } from "../src/lib/types";
+import { fileURLToPath } from "url";
+
+// Types inline to avoid import path issues in monorepo
+interface Verse {
+  number: number;
+  text: string;
+  plainText?: string;
+}
+
+interface Chapter {
+  number: number;
+  verses: Verse[];
+}
+
+interface Book {
+  name: string;
+  shortName: string;
+  chapters: Chapter[];
+}
+
+interface BookOfMormon {
+  books: Book[];
+}
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DATA_DIR = path.join(__dirname, "../data");
 
 const GUTENBERG_URL = "https://www.gutenberg.org/cache/epub/17/pg17.txt";
 
@@ -239,9 +265,36 @@ function parseBookOfMormon(rawText: string): BookOfMormon {
       continue;
     }
 
-    // Continue multi-line verse
+    // Continue multi-line verse - but check for embedded verse references
     if (currentVerseNum > 0 && line) {
-      currentVerseText += " " + line;
+      // Check for embedded verse pattern (e.g., "...text. 2:13 More text...")
+      const embeddedVersePattern = /^(.*?)\s+(\d+):(\d+)\s+(.+)$/;
+      const embeddedMatch = line.match(embeddedVersePattern);
+
+      if (embeddedMatch && currentChapter) {
+        const beforeText = embeddedMatch[1]?.trim() ?? "";
+        const chapterNum = parseInt(embeddedMatch[2]!, 10);
+        const verseNum = parseInt(embeddedMatch[3]!, 10);
+        const afterText = embeddedMatch[4] ?? "";
+
+        // Add the text before the embedded reference to current verse
+        if (beforeText) {
+          currentVerseText += " " + beforeText;
+        }
+
+        // Save current verse and start new one
+        saveCurrentVerse();
+
+        // Handle chapter change for multi-chapter books
+        if (currentChapter.number !== chapterNum && !["Enos", "Jarom", "Omni", "Words of Mormon", "4 Nephi"].includes(currentBook?.shortName ?? "")) {
+          startNewChapter(chapterNum);
+        }
+
+        currentVerseNum = verseNum;
+        currentVerseText = afterText;
+      } else {
+        currentVerseText += " " + line;
+      }
     }
   }
 
@@ -262,14 +315,17 @@ async function main() {
   try {
     const rawText = await downloadText();
 
-    const rawPath = path.join(process.cwd(), "data/original/raw.txt");
+    // Ensure directories exist
+    fs.mkdirSync(path.join(DATA_DIR, "original"), { recursive: true });
+
+    const rawPath = path.join(DATA_DIR, "original/raw.txt");
     fs.writeFileSync(rawPath, rawText);
     console.log(`Saved raw text to ${rawPath}`);
 
     console.log("Parsing text...");
     const bookOfMormon = parseBookOfMormon(rawText);
 
-    const jsonPath = path.join(process.cwd(), "data/original/parsed.json");
+    const jsonPath = path.join(DATA_DIR, "original/parsed.json");
     fs.writeFileSync(jsonPath, JSON.stringify(bookOfMormon, null, 2));
     console.log(`Saved parsed JSON to ${jsonPath}`);
 

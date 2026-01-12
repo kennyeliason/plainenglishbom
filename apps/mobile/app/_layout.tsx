@@ -40,10 +40,14 @@ export default function RootLayout() {
           headerStyle: {
             backgroundColor: isDark ? "#1a1a1a" : "#faf9f6",
           },
-          headerTintColor: isDark ? "#faf9f6" : "#1a1a1a",
+          headerShadowVisible: false,
+          headerTintColor: isDark ? "#6b9ac4" : "#1a4a6e",
           headerTitleStyle: {
             fontWeight: "600",
+            fontSize: 17,
           },
+          headerBackTitleVisible: false,
+          headerBackButtonDisplayMode: "minimal",
           contentStyle: {
             backgroundColor: isDark ? "#1a1a1a" : "#faf9f6",
           },
@@ -52,19 +56,23 @@ export default function RootLayout() {
         <Stack.Screen
           name="index"
           options={{
-            title: "Book of Mormon",
+            headerShown: false,
+            title: "",
+            headerBackTitle: "",
           }}
         />
         <Stack.Screen
           name="[book]/index"
           options={{
             title: "Chapters",
+            headerBackTitle: "",
           }}
         />
         <Stack.Screen
           name="[book]/[chapter]"
           options={{
             title: "Chapter",
+            headerBackTitle: "",
           }}
         />
         <Stack.Screen
