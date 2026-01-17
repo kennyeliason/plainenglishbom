@@ -250,7 +250,7 @@ export default function ChapterScreen() {
                   : (isDark ? "#b8956a" : "#9a7b4f")
                 }
                 style={[
-                  { marginLeft: 12 },
+                  { marginLeft: hasChapterChatHistory ? 8 : 12 },
                   !hasKey && { opacity: 0.35 },
                 ]}
               />
