@@ -26,6 +26,7 @@ function VerseCard({
   onLayout,
   onAIPress,
   hasApiKey,
+  hasChatHistory,
 }: {
   verse: Verse;
   isDark: boolean;
@@ -33,6 +34,7 @@ function VerseCard({
   onLayout?: (event: LayoutChangeEvent) => void;
   onAIPress?: (verse: Verse) => void;
   hasApiKey?: boolean;
+  hasChatHistory?: boolean;
 }) {
   const [showOriginal, setShowOriginal] = useState(false);
   const styles = createStyles(isDark);
@@ -55,10 +57,16 @@ function VerseCard({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <FontAwesome
-                name="lightbulb-o"
+                name={hasChatHistory ? "lightbulb-o" : "lightbulb-o"}
                 size={18}
-                color={isDark ? "#b8956a" : "#9a7b4f"}
+                color={hasChatHistory
+                  ? (isDark ? "#d4af37" : "#d4af37")
+                  : (isDark ? "#b8956a" : "#9a7b4f")
+                }
               />
+              {hasChatHistory && (
+                <View style={styles.chatHistoryDot} />
+              )}
             </Pressable>
           )}
         </View>
@@ -112,11 +120,29 @@ export default function ChapterScreen() {
   // AI feature state
   const [hasKey, setHasKey] = useState(false);
   const [selectedVerse, setSelectedVerse] = useState<Verse | null>(null);
+  const [versesWithHistory, setVersesWithHistory] = useState<Set<number>>(new Set());
 
   // Check for API key on mount
   useEffect(() => {
     checkApiKey().then(setHasKey);
   }, []);
+
+  // Check which verses have chat history
+  useEffect(() => {
+    const checkChatHistory = async () => {
+      if (!book || !chapter) return;
+      const versesWithChat = new Set<number>();
+      for (const verse of chapter.verses) {
+        const key = `chat:${book.shortName}:${chapterNum}:${verse.number}`;
+        const history = await AsyncStorage.getItem(key);
+        if (history) {
+          versesWithChat.add(verse.number);
+        }
+      }
+      setVersesWithHistory(versesWithChat);
+    };
+    checkChatHistory();
+  }, [book, chapter, chapterNum]);
 
   const handleVerseLayout = useCallback((verseNum: number, event: LayoutChangeEvent) => {
     versePositions.current[verseNum] = event.nativeEvent.layout.y;
@@ -222,6 +248,7 @@ export default function ChapterScreen() {
                 onLayout={(e) => handleVerseLayout(verse.number, e)}
                 onAIPress={handleAIPress}
                 hasApiKey={hasKey}
+                hasChatHistory={versesWithHistory.has(verse.number)}
               />
             ))}
           </View>
@@ -267,7 +294,15 @@ export default function ChapterScreen() {
           chapter={chapter}
           bookName={book.shortName}
           chapterNum={chapterNum}
-          onClose={() => setSelectedVerse(null)}
+          onClose={async () => {
+            // Check if this verse now has chat history
+            const key = `chat:${book.shortName}:${chapterNum}:${selectedVerse.number}`;
+            const history = await AsyncStorage.getItem(key);
+            if (history) {
+              setVersesWithHistory((prev) => new Set([...prev, selectedVerse.number]));
+            }
+            setSelectedVerse(null);
+          }}
         />
       )}
     </GestureHandlerRootView>
@@ -362,9 +397,19 @@ const createStyles = (isDark: boolean, bottomInset: number = 0) =>
       marginLeft: 8,
       marginTop: 4,
       padding: 4,
+      position: "relative",
     },
     aiButtonDimmed: {
       opacity: 0.35,
+    },
+    chatHistoryDot: {
+      position: "absolute",
+      top: 2,
+      right: 2,
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: isDark ? "#6b9ac4" : "#1a4a6e",
     },
     toggleButton: {
       flexDirection: "row",
