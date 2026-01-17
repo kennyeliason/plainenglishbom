@@ -98,9 +98,11 @@ export function VerseInsightPanel({
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 100);
     } catch (error) {
+      console.error("AI Chat Error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Sorry, I couldn't generate a response." },
+        { role: "assistant", content: `Sorry, I couldn't generate a response. (${errorMessage})` },
       ]);
     } finally {
       setIsSending(false);

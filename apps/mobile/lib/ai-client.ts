@@ -1,6 +1,5 @@
 import * as SecureStore from "expo-secure-store";
 import type { Chapter, Verse } from "@plainenglishbom/core";
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 const API_KEY_STORAGE_KEY = "openai_api_key";
 
@@ -25,17 +24,42 @@ export async function hasApiKey(): Promise<boolean> {
   return !!key;
 }
 
-// Dynamically import OpenAI to avoid circular dependency issues with Metro bundler
-type OpenAIClient = InstanceType<typeof import("openai").default>;
+type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
-// Create OpenAI client with stored key
-async function getOpenAIClient(): Promise<OpenAIClient | null> {
+// Call OpenAI API directly using fetch (avoids SDK bundler issues)
+async function callOpenAI(messages: ChatMessage[], maxTokens: number = 500): Promise<string> {
   const apiKey = await getApiKey();
-  if (!apiKey) return null;
+  if (!apiKey) {
+    throw new Error("No API key configured");
+  }
 
-  // Dynamic import to avoid bundler issues
-  const { default: OpenAI } = await import("openai");
-  return new OpenAI({ apiKey });
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o-mini",
+      messages,
+      max_tokens: maxTokens,
+      temperature: 0.7,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`OpenAI API error: ${response.status} - ${error}`);
+  }
+
+  const data = await response.json();
+  const content = data.choices?.[0]?.message?.content?.trim();
+
+  if (!content) {
+    throw new Error("Empty response from API");
+  }
+
+  return content;
 }
 
 // Generate initial verse insight (1 sentence)
@@ -45,11 +69,6 @@ export async function generateVerseInsight(
   verse: Verse,
   chapter: Chapter
 ): Promise<string> {
-  const client = await getOpenAIClient();
-  if (!client) {
-    throw new Error("No API key configured");
-  }
-
   // Get surrounding verses for context (2 before, 2 after)
   const verseIndex = chapter.verses.findIndex((v) => v.number === verse.number);
   const startIdx = Math.max(0, verseIndex - 2);
@@ -70,17 +89,10 @@ ${chapter.summary ? `CHAPTER SUMMARY: ${chapter.summary}` : ""}
 Give ONE sentence that captures the key insight about this verse.
 Be clear, conversational, and age-appropriate.`;
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [
-      { role: "system", content: systemPrompt },
-      { role: "user", content: "What's the key insight for this verse?" },
-    ],
-    max_tokens: 100,
-    temperature: 0.7,
-  });
-
-  return response.choices[0]?.message?.content?.trim() || "Unable to generate insight.";
+  return callOpenAI([
+    { role: "system", content: systemPrompt },
+    { role: "user", content: "What's the key insight for this verse?" },
+  ], 100);
 }
 
 // Chat about a verse with follow-up questions
@@ -92,12 +104,7 @@ export async function chatAboutVerse(
   messageHistory: Array<{ role: "user" | "assistant"; content: string }>,
   userMessage: string
 ): Promise<string> {
-  const client = await getOpenAIClient();
-  if (!client) {
-    throw new Error("No API key configured");
-  }
-
-  const systemPrompt = `You are a study companion for the Book of Mormon, focused ONLY on helping users understand scripture.
+  const systemPrompt = `You are a study companion for the Book of Mormon, helping users understand scripture.
 
 The user is studying ${bookName} ${chapterNum}:${verse.number}.
 
@@ -112,7 +119,7 @@ GUIDELINES:
 - If asked about topics unrelated to scripture or faith, kindly redirect to the verse being studied
 - Keep responses concise and uplifting (2-3 sentences unless more detail is needed)`;
 
-  const messages: ChatCompletionMessageParam[] = [
+  const messages: ChatMessage[] = [
     { role: "system", content: systemPrompt },
     ...messageHistory.map((m) => ({
       role: m.role as "user" | "assistant",
@@ -121,12 +128,5 @@ GUIDELINES:
     { role: "user", content: userMessage },
   ];
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages,
-    max_tokens: 500,
-    temperature: 0.7,
-  });
-
-  return response.choices[0]?.message?.content?.trim() || "Unable to generate response.";
+  return callOpenAI(messages, 500);
 }
