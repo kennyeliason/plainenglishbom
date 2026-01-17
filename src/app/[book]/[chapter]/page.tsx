@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: ChapterPageProps): Promise<Me
   const description = `${book.shortName} Chapter ${chapterNum} in plain English. ${chapter.verses.length} verses. ${preview}`;
 
   return generatePageMetadata({
-    title: `${book.shortName} Chapter ${chapterNum} - Plain English`,
+    title: `${book.shortName} ${chapterNum} - Plain English Book of Mormon`,
     description,
     path: `/${slugify(book.shortName)}/${chapterNum}`,
     type: "article",

@@ -192,3 +192,17 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
     })),
   });
 }
+
+export function generateFAQSchema(faqs: Array<{ question: string; answer: string }>) {
+  return generateSchemaMarkup({
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  });
+}

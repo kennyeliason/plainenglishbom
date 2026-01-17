@@ -1,26 +1,53 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllBooks, slugify } from "@/lib/data";
-import { generatePageMetadata } from "@/lib/seo";
+import { generatePageMetadata, generateFAQSchema } from "@/lib/seo";
 import { ContinueReading } from "@/components/ContinueReading";
+import { StructuredData } from "@/components/StructuredData";
 
 export const metadata: Metadata = {
   ...generatePageMetadata({
-    title: "Book of Mormon in Plain English - Modern Translation",
+    title: "Plain English Book of Mormon - Modern Translation",
     description:
-      "The Book of Mormon translated into clear, modern English while preserving its original meaning and spiritual power. Read all 15 books with natural, accessible language.",
+      "Read the Plain English Book of Mormon - all 15 books translated into clear, modern language. Perfect for readers who find King James English challenging.",
     path: "/",
   }),
   title: {
-    absolute: "Book of Mormon in Plain English - Modern Translation",
+    absolute: "Plain English Book of Mormon - Modern Translation",
   },
 };
 
+const faqs = [
+  {
+    question: "What is the Plain English Book of Mormon?",
+    answer:
+      "The Plain English Book of Mormon is a modern translation that converts archaic King James English into clear, accessible language. Pronouns like 'thee', 'thou', and 'ye' are updated to 'you', verbs like 'hath' become 'has', and phrases like 'it came to pass' are simplified—all while preserving the original meaning and spiritual depth of the scripture.",
+  },
+  {
+    question: "How was the Book of Mormon translated to plain English?",
+    answer:
+      "The translation uses a combination of rule-based text transformations and AI-powered language processing. Common archaic patterns are systematically converted using proven linguistic rules, while more complex passages are refined using advanced language models to ensure natural, readable English that stays true to the original text.",
+  },
+  {
+    question: "Is the plain English version accurate to the original?",
+    answer:
+      "Yes. The plain English translation preserves the complete meaning of every verse. No content is added, removed, or altered in meaning—only the archaic language patterns are modernized. You can view the original King James text alongside any verse to compare.",
+  },
+  {
+    question: "Who is this translation for?",
+    answer:
+      "This translation is perfect for anyone who finds the archaic King James language challenging to read, including new readers, youth, those learning English as a second language, or anyone who simply prefers modern language. It makes the Book of Mormon accessible without requiring familiarity with 17th-century English.",
+  },
+];
+
 export default function HomePage() {
   const books = getAllBooks();
+  const faqSchema = generateFAQSchema(faqs);
 
   return (
-    <div className="animate-fade-in">
+    <>
+      <StructuredData data={faqSchema} />
+      <div className="animate-fade-in">
       {/* Hero Section */}
       <div className="text-center mb-16">
         <h1
@@ -138,8 +165,34 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* What Is Section - optimized for featured snippets */}
+      <div className="mb-16">
+        <h2
+          className="text-2xl mb-4"
+          style={{
+            fontFamily: "var(--font-cormorant), serif",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+          }}
+        >
+          What is the Plain English Book of Mormon?
+        </h2>
+        <p
+          className="text-lg leading-relaxed"
+          style={{ color: "var(--color-text-secondary)" }}
+        >
+          The <strong>Plain English Book of Mormon</strong> is a modern
+          translation that converts archaic King James English into clear,
+          accessible language. Pronouns like &ldquo;thee&rdquo; and
+          &ldquo;thou&rdquo; become &ldquo;you,&rdquo; verbs like
+          &ldquo;hath&rdquo; become &ldquo;has,&rdquo; and phrases like
+          &ldquo;it came to pass&rdquo; are simplified—all while preserving
+          the original meaning and spiritual power of the scripture.
+        </p>
+      </div>
+
       {/* About Section */}
-      <div className="about-section">
+      <div className="about-section mb-16">
         <h2
           className="text-2xl mb-4"
           style={{
@@ -201,6 +254,65 @@ export default function HomePage() {
           </p>
         </div>
       </div>
+
+      {/* FAQ Section */}
+      <div className="mb-8">
+        <h2
+          className="text-2xl mb-6"
+          style={{
+            fontFamily: "var(--font-cormorant), serif",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+          }}
+        >
+          Frequently Asked Questions
+        </h2>
+        <div className="space-y-4">
+          {faqs.map((faq, index) => (
+            <details
+              key={index}
+              className="group rounded-xl overflow-hidden"
+              style={{
+                background: "var(--color-bg-tertiary)",
+                border: "1px solid var(--color-border)",
+              }}
+            >
+              <summary
+                className="flex items-center justify-between p-5 cursor-pointer select-none"
+                style={{ color: "var(--color-text-primary)" }}
+              >
+                <span
+                  className="font-medium pr-4"
+                  style={{ fontFamily: "var(--font-source-serif), serif" }}
+                >
+                  {faq.question}
+                </span>
+                <svg
+                  className="w-5 h-5 flex-shrink-0 transform transition-transform group-open:rotate-180"
+                  style={{ color: "var(--color-text-tertiary)" }}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </summary>
+              <div
+                className="px-5 pb-5 leading-relaxed"
+                style={{ color: "var(--color-text-secondary)" }}
+              >
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
     </div>
+    </>
   );
 }
