@@ -130,3 +130,46 @@ GUIDELINES:
 
   return callOpenAI(messages, 500);
 }
+
+// Chat about a chapter (not a specific verse)
+export async function chatAboutChapter(
+  bookName: string,
+  chapterNum: number,
+  chapter: Chapter,
+  messageHistory: Array<{ role: "user" | "assistant"; content: string }>,
+  userMessage: string
+): Promise<string> {
+  // Include first few verses as context
+  const previewVerses = chapter.verses.slice(0, 5);
+  const versesPreview = previewVerses
+    .map((v) => `${v.number}. ${v.plainText || v.text}`)
+    .join("\n");
+
+  const systemPrompt = `You are a study companion for the Book of Mormon, helping users understand scripture.
+
+The user is studying ${bookName} Chapter ${chapterNum}.
+
+${chapter.summary ? `CHAPTER SUMMARY: ${chapter.summary}` : ""}
+
+CHAPTER PREVIEW (first few verses):
+${versesPreview}
+
+GUIDELINES:
+- Help the user understand and appreciate this chapter of scripture
+- Stay positive and faith-promoting in your responses
+- Discuss scriptural themes including trials, faith, repentance, and God's love
+- You may reference teachings from modern prophets and apostles when relevant
+- If asked about topics unrelated to scripture or faith, kindly redirect to the chapter being studied
+- Keep responses concise and uplifting (2-3 sentences unless more detail is needed)`;
+
+  const messages: ChatMessage[] = [
+    { role: "system", content: systemPrompt },
+    ...messageHistory.map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.content,
+    })),
+    { role: "user", content: userMessage },
+  ];
+
+  return callOpenAI(messages, 500);
+}

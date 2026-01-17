@@ -17,6 +17,7 @@ import { READING_PROGRESS_KEY, type ReadingProgress, type Verse, type Chapter as
 import { getBook, getChapter, unslugify, slugify } from "../../lib/data";
 import { hasApiKey as checkApiKey } from "../../lib/ai-client";
 import { VerseInsightPanel } from "../../components/VerseInsightPanel";
+import { ChapterInsightPanel } from "../../components/ChapterInsightPanel";
 
 // Verse card component with expandable original text
 function VerseCard({
@@ -57,16 +58,13 @@ function VerseCard({
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <FontAwesome
-                name={hasChatHistory ? "lightbulb-o" : "lightbulb-o"}
-                size={18}
+                name={hasChatHistory ? "comment" : "lightbulb-o"}
+                size={hasChatHistory ? 16 : 18}
                 color={hasChatHistory
-                  ? (isDark ? "#d4af37" : "#d4af37")
+                  ? (isDark ? "#6b9ac4" : "#1a4a6e")
                   : (isDark ? "#b8956a" : "#9a7b4f")
                 }
               />
-              {hasChatHistory && (
-                <View style={styles.chatHistoryDot} />
-              )}
             </Pressable>
           )}
         </View>
@@ -120,7 +118,9 @@ export default function ChapterScreen() {
   // AI feature state
   const [hasKey, setHasKey] = useState(false);
   const [selectedVerse, setSelectedVerse] = useState<Verse | null>(null);
+  const [showChapterChat, setShowChapterChat] = useState(false);
   const [versesWithHistory, setVersesWithHistory] = useState<Set<number>>(new Set());
+  const [hasChapterChatHistory, setHasChapterChatHistory] = useState(false);
 
   // Check for API key on mount
   useEffect(() => {
@@ -140,6 +140,11 @@ export default function ChapterScreen() {
         }
       }
       setVersesWithHistory(versesWithChat);
+
+      // Check for chapter-wide chat history
+      const chapterKey = `chat:${book.shortName}:${chapterNum}:chapter`;
+      const chapterHistory = await AsyncStorage.getItem(chapterKey);
+      setHasChapterChatHistory(!!chapterHistory);
     };
     checkChatHistory();
   }, [book, chapter, chapterNum]);
@@ -165,6 +170,14 @@ export default function ChapterScreen() {
       return;
     }
     setSelectedVerse(verse);
+  }, [hasKey]);
+
+  const handleChapterChatPress = useCallback(() => {
+    if (!hasKey) {
+      router.push("/settings");
+      return;
+    }
+    setShowChapterChat(true);
   }, [hasKey]);
 
   // Save reading progress
@@ -221,6 +234,23 @@ export default function ChapterScreen() {
       <Stack.Screen
         options={{
           title: `${book.shortName} ${chapterNum}`,
+          headerRight: () => (
+            <Pressable
+              onPress={handleChapterChatPress}
+              style={{ marginRight: 8, padding: 4 }}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <FontAwesome
+                name={hasChapterChatHistory ? "comment" : "lightbulb-o"}
+                size={hasChapterChatHistory ? 20 : 22}
+                color={hasChapterChatHistory
+                  ? (isDark ? "#6b9ac4" : "#1a4a6e")
+                  : (isDark ? "#b8956a" : "#9a7b4f")
+                }
+                style={!hasKey ? { opacity: 0.35 } : undefined}
+              />
+            </Pressable>
+          ),
         }}
       />
       <GestureDetector gesture={swipeGesture}>
@@ -287,7 +317,7 @@ export default function ChapterScreen() {
         )}
       </View>
 
-      {/* AI Insight Panel */}
+      {/* AI Insight Panel for Verse */}
       {selectedVerse && (
         <VerseInsightPanel
           verse={selectedVerse}
@@ -302,6 +332,24 @@ export default function ChapterScreen() {
               setVersesWithHistory((prev) => new Set([...prev, selectedVerse.number]));
             }
             setSelectedVerse(null);
+          }}
+        />
+      )}
+
+      {/* AI Insight Panel for Chapter */}
+      {showChapterChat && (
+        <ChapterInsightPanel
+          chapter={chapter}
+          bookName={book.shortName}
+          chapterNum={chapterNum}
+          onClose={async () => {
+            // Check if chapter now has chat history
+            const key = `chat:${book.shortName}:${chapterNum}:chapter`;
+            const history = await AsyncStorage.getItem(key);
+            if (history) {
+              setHasChapterChatHistory(true);
+            }
+            setShowChapterChat(false);
           }}
         />
       )}
@@ -401,15 +449,6 @@ const createStyles = (isDark: boolean, bottomInset: number = 0) =>
     },
     aiButtonDimmed: {
       opacity: 0.35,
-    },
-    chatHistoryDot: {
-      position: "absolute",
-      top: 2,
-      right: 2,
-      width: 6,
-      height: 6,
-      borderRadius: 3,
-      backgroundColor: isDark ? "#6b9ac4" : "#1a4a6e",
     },
     toggleButton: {
       flexDirection: "row",
