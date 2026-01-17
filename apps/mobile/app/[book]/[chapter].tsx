@@ -240,16 +240,25 @@ export default function ChapterScreen() {
           headerRight: () => (
             <Pressable
               onPress={handleChapterChatPress}
+              style={{
+                width: 28,
+                height: 28,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <FontAwesome
                 name={hasChapterChatHistory ? "comment" : "lightbulb-o"}
-                size={hasChapterChatHistory ? 20 : 22}
+                size={hasChapterChatHistory ? 18 : 20}
                 color={hasChapterChatHistory
                   ? (isDark ? "#6b9ac4" : "#1a4a6e")
                   : (isDark ? "#b8956a" : "#9a7b4f")
                 }
-                style={!hasKey ? { opacity: 0.35 } : undefined}
+                style={[
+                  { textAlign: "center" },
+                  !hasKey && { opacity: 0.35 },
+                ]}
               />
             </Pressable>
           ),
