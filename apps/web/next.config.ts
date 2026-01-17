@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // Remove X-Powered-By header
   poweredByHeader: false,
 
+  // Use trailing slashes for all URLs
+  trailingSlash: true,
+
   // Security headers
   headers: async () => [
     {
