@@ -234,10 +234,12 @@ export default function ChapterScreen() {
       <Stack.Screen
         options={{
           title: `${book.shortName} ${chapterNum}`,
+          headerBackgroundContainerStyle: {
+            backgroundColor: "transparent",
+          },
           headerRight: () => (
             <Pressable
               onPress={handleChapterChatPress}
-              style={{ marginRight: 8, padding: 4 }}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <FontAwesome
