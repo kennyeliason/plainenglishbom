@@ -18,7 +18,7 @@ import type { Verse, Chapter } from "@plainenglishbom/core";
 import { chatAboutVerse } from "../lib/ai-client";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const PANEL_HEIGHT = SCREEN_HEIGHT * 0.6;
+const PANEL_HEIGHT = SCREEN_HEIGHT * 0.7;
 
 type Message = {
   role: "user" | "assistant";
@@ -77,7 +77,7 @@ export function VerseInsightPanel({
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsSending(true);
 
-    // Scroll to bottom
+    // Scroll to show user's message was sent
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 100);
@@ -92,11 +92,7 @@ export function VerseInsightPanel({
         userMessage
       );
       setMessages((prev) => [...prev, { role: "assistant", content: response }]);
-
-      // Scroll to bottom after response
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+      // Don't auto-scroll after AI response - let user read naturally from their question
     } catch (error) {
       console.error("AI Chat Error:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
