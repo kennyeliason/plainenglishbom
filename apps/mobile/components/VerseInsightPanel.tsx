@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Verse, Chapter } from "@plainenglishbom/core";
 import { chatAboutVerse } from "../lib/ai-client";
@@ -49,7 +50,39 @@ export function VerseInsightPanel({
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // Generate storage key for this verse
+  const storageKey = `chat:${bookName}:${chapterNum}:${verse.number}`;
+
+  // Load previous chat history
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(storageKey);
+        if (saved) {
+          setMessages(JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error("Failed to load chat history:", e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadHistory();
+  }, [storageKey]);
+
+  // Save chat history when messages change
+  const saveHistory = useCallback(async (msgs: Message[]) => {
+    if (msgs.length > 0) {
+      try {
+        await AsyncStorage.setItem(storageKey, JSON.stringify(msgs));
+      } catch (e) {
+        console.error("Failed to save chat history:", e);
+      }
+    }
+  }, [storageKey]);
 
   // Slide in on mount
   useEffect(() => {
@@ -74,7 +107,8 @@ export function VerseInsightPanel({
 
     const userMessage = inputText.trim();
     setInputText("");
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+    const newMessages = [...messages, { role: "user" as const, content: userMessage }];
+    setMessages(newMessages);
     setIsSending(true);
 
     // Scroll to show user's message was sent
@@ -91,15 +125,19 @@ export function VerseInsightPanel({
         messages,
         userMessage
       );
-      setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      const updatedMessages = [...newMessages, { role: "assistant" as const, content: response }];
+      setMessages(updatedMessages);
+      saveHistory(updatedMessages);
       // Don't auto-scroll after AI response - let user read naturally from their question
     } catch (error) {
       console.error("AI Chat Error:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: `Sorry, I couldn't generate a response. (${errorMessage})` },
-      ]);
+      const errorMessages = [
+        ...newMessages,
+        { role: "assistant" as const, content: `Sorry, I couldn't generate a response. (${errorMessage})` },
+      ];
+      setMessages(errorMessages);
+      // Don't save error messages to history
     } finally {
       setIsSending(false);
     }
