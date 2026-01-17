@@ -218,6 +218,29 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             {chapter.verses.length} verses
           </span>
         </p>
+        {/* Chapter Summary */}
+        {chapter.summary && (
+          <div
+            className="mt-8 max-w-2xl mx-auto text-left px-4 py-3 rounded"
+            style={{
+              borderLeft: "3px solid var(--color-accent)",
+              backgroundColor: "var(--color-bg-secondary)",
+            }}
+          >
+            <p
+              className="text-xs uppercase tracking-widest mb-2"
+              style={{ color: "var(--color-text-muted)" }}
+            >
+              Overview
+            </p>
+            <p
+              className="text-base leading-relaxed"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              {chapter.summary}
+            </p>
+          </div>
+        )}
         {/* Compare Models button - hidden for 1 Nephi, but logic kept for future testing */}
         {comparison && book.shortName !== "1 Nephi" && (
           <div className="mt-4">

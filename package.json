@@ -1,36 +1,24 @@
 {
-  "name": "plainenglishbom",
+  "name": "plainenglishbom-monorepo",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
+    "build": "turbo build",
+    "dev": "turbo dev --filter=web",
+    "dev:mobile": "turbo dev --filter=mobile",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
     "parse": "tsx scripts/parse-gutenberg.ts",
     "transform": "tsx scripts/transform-text.ts",
     "transform:rules": "tsx scripts/transform-text.ts rules",
     "transform:ai": "tsx scripts/transform-text.ts ai",
-    "transform:regenerate": "tsx scripts/transform-text.ts --regenerate",
-    "test:models": "tsx scripts/test-models.ts"
-  },
-  "dependencies": {
-    "@next/third-parties": "^16.1.1",
-    "next": "16.1.1",
-    "openai": "^4.104.0",
-    "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "sync-mobile-data": "tsx scripts/sync-mobile-data.ts",
+    "generate-summaries": "tsx scripts/generate-summaries.ts"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "dotenv": "^17.2.3",
-    "eslint": "^9",
-    "eslint-config-next": "16.1.1",
-    "tailwindcss": "^4",
+    "turbo": "^2.3.3",
     "tsx": "^4.21.0",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@9.15.0"
 }

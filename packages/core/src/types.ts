@@ -7,6 +7,7 @@ export interface Verse {
 export interface Chapter {
   number: number;
   verses: Verse[];
+  summary?: string;
 }
 
 export interface Book {
