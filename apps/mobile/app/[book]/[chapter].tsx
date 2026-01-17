@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Gesture, GestureDetector, Directions, GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { READING_PROGRESS_KEY, type ReadingProgress, type Verse, type Chapter as ChapterType } from "@plainenglishbom/core";
 import { getBook, getChapter, unslugify, slugify } from "../../lib/data";
 import { hasApiKey as checkApiKey } from "../../lib/ai-client";
@@ -240,23 +240,17 @@ export default function ChapterScreen() {
           headerRight: () => (
             <Pressable
               onPress={handleChapterChatPress}
-              style={{
-                width: 28,
-                height: 28,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               <FontAwesome
                 name={hasChapterChatHistory ? "comment" : "lightbulb-o"}
-                size={hasChapterChatHistory ? 18 : 20}
+                size={20}
                 color={hasChapterChatHistory
                   ? (isDark ? "#6b9ac4" : "#1a4a6e")
                   : (isDark ? "#b8956a" : "#9a7b4f")
                 }
                 style={[
-                  { marginTop: 4, marginLeft: 2 },
+                  { marginLeft: 12 },
                   !hasKey && { opacity: 0.35 },
                 ]}
               />
