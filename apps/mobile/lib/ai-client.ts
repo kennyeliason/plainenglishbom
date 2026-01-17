@@ -1,6 +1,6 @@
-import OpenAI from "openai";
 import * as SecureStore from "expo-secure-store";
 import type { Chapter, Verse } from "@plainenglishbom/core";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 const API_KEY_STORAGE_KEY = "openai_api_key";
 
@@ -25,10 +25,16 @@ export async function hasApiKey(): Promise<boolean> {
   return !!key;
 }
 
+// Dynamically import OpenAI to avoid circular dependency issues with Metro bundler
+type OpenAIClient = InstanceType<typeof import("openai").default>;
+
 // Create OpenAI client with stored key
-async function getOpenAIClient(): Promise<OpenAI | null> {
+async function getOpenAIClient(): Promise<OpenAIClient | null> {
   const apiKey = await getApiKey();
   if (!apiKey) return null;
+
+  // Dynamic import to avoid bundler issues
+  const { default: OpenAI } = await import("openai");
   return new OpenAI({ apiKey });
 }
 
@@ -106,7 +112,7 @@ STRICT GUIDELINES:
 - Keep responses concise (2-3 sentences unless more detail is needed)
 - Never generate inappropriate, violent, or off-topic content`;
 
-  const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+  const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
     ...messageHistory.map((m) => ({
       role: m.role as "user" | "assistant",
