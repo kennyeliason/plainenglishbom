@@ -14,7 +14,7 @@
       "backgroundColor": "#1a2744"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.plainenglishbom.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
