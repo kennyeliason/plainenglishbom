@@ -136,11 +136,11 @@ export function VerseInsightPanel({
           </View>
 
           {/* Verse Preview */}
-          <View style={styles.versePreview}>
-            <Text style={styles.versePreviewText} numberOfLines={2}>
+          <ScrollView style={styles.versePreview} nestedScrollEnabled>
+            <Text style={styles.versePreviewText}>
               "{verse.plainText || verse.text}"
             </Text>
-          </View>
+          </ScrollView>
 
           {/* Messages */}
           <ScrollView
@@ -256,6 +256,7 @@ const createStyles = (isDark: boolean, bottomInset: number) =>
       fontWeight: "500",
     },
     versePreview: {
+      maxHeight: 120,
       paddingHorizontal: 16,
       paddingVertical: 12,
       backgroundColor: isDark ? "#242424" : "#f5f3ef",

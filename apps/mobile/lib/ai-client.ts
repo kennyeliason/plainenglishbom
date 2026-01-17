@@ -104,13 +104,13 @@ The user is studying ${bookName} ${chapterNum}:${verse.number}.
 THE VERSE: "${verse.plainText || verse.text}"
 ${chapter.summary ? `CHAPTER CONTEXT: ${chapter.summary}` : ""}
 
-STRICT GUIDELINES:
-- ONLY answer questions about this verse, the Book of Mormon, or related scripture topics
-- If asked about unrelated topics (math, coding, recipes, etc.), politely redirect: "I'm here to help with scripture study. What would you like to know about this verse?"
-- Be helpful, accurate, and family-friendly
-- Reference specific verses when relevant
-- Keep responses concise (2-3 sentences unless more detail is needed)
-- Never generate inappropriate, violent, or off-topic content`;
+GUIDELINES:
+- Help the user understand and appreciate the scriptures
+- Stay positive and faith-promoting in your responses
+- Discuss scriptural themes including trials, faith, repentance, and God's love
+- You may reference teachings from modern prophets and apostles when relevant
+- If asked about topics unrelated to scripture or faith, kindly redirect to the verse being studied
+- Keep responses concise and uplifting (2-3 sentences unless more detail is needed)`;
 
   const messages: ChatCompletionMessageParam[] = [
     { role: "system", content: systemPrompt },
