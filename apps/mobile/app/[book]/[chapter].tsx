@@ -256,7 +256,7 @@ export default function ChapterScreen() {
                   : (isDark ? "#b8956a" : "#9a7b4f")
                 }
                 style={[
-                  { textAlign: "center" },
+                  { paddingTop: 1, paddingLeft: 1 },
                   !hasKey && { opacity: 0.35 },
                 ]}
               />
