@@ -20,5 +20,14 @@
     "production": {
       "autoIncrement": true
     }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "kenny.eliason@gmail.com",
+        "appleTeamId": "AN9DKZG53V",
+        "ascAppId": "6757943123"
+      }
+    }
   }
 }
