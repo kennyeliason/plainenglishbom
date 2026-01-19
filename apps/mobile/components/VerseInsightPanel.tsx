@@ -8,18 +8,19 @@ import {
   useColorScheme,
   Animated,
   Dimensions,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
+import { PanGestureHandler, GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Verse, Chapter } from "@plainenglishbom/core";
 import { chatAboutVerse } from "../lib/ai-client";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
-const PANEL_HEIGHT = SCREEN_HEIGHT * 0.7;
+const PANEL_HEIGHT = SCREEN_HEIGHT * 0.75;
 
 type Message = {
   role: "user" | "assistant";
@@ -51,7 +52,27 @@ export function VerseInsightPanel({
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
+
+  // Handle keyboard show/hide
+  useEffect(() => {
+    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+
+    const showListener = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates.height);
+    });
+
+    const hideListener = Keyboard.addListener(hideEvent, () => {
+      setKeyboardHeight(0);
+    });
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, []);
 
   // Generate storage key for this verse
   const storageKey = `chat:${bookName}:${chapterNum}:${verse.number}`;
@@ -95,11 +116,36 @@ export function VerseInsightPanel({
   }, []);
 
   const handleClose = () => {
+    Keyboard.dismiss();
     Animated.timing(slideAnim, {
       toValue: PANEL_HEIGHT,
       duration: 250,
       useNativeDriver: true,
     }).start(() => onClose());
+  };
+
+  // Handle drag gesture on the panel
+  const onGestureEvent = Animated.event(
+    [{ nativeEvent: { translationY: slideAnim } }],
+    { useNativeDriver: true }
+  );
+
+  const onHandlerStateChange = (event: any) => {
+    if (event.nativeEvent.oldState === 4) { // State.ACTIVE
+      const { translationY, velocityY } = event.nativeEvent;
+      // Close if dragged down more than 100px or with high velocity
+      if (translationY > 100 || velocityY > 500) {
+        handleClose();
+      } else {
+        // Snap back to open position
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 65,
+          friction: 11,
+        }).start();
+      }
+    }
   };
 
   const handleSend = async () => {
@@ -143,100 +189,110 @@ export function VerseInsightPanel({
     }
   };
 
+  // Shrink panel to fit above keyboard while keeping header visible
+  const panelHeight = keyboardHeight > 0
+    ? Math.min(PANEL_HEIGHT, SCREEN_HEIGHT - keyboardHeight - insets.top - 60)
+    : PANEL_HEIGHT;
+
   return (
     <View style={styles.overlay}>
       <Pressable style={styles.backdrop} onPress={handleClose} />
       <Animated.View
         style={[
           styles.panel,
-          { transform: [{ translateY: slideAnim }] },
+          {
+            height: panelHeight,
+            marginBottom: keyboardHeight,
+            transform: [{ translateY: slideAnim }]
+          },
         ]}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.keyboardView}
+        {/* Draggable Handle Area */}
+        <PanGestureHandler
+          onGestureEvent={onGestureEvent}
+          onHandlerStateChange={onHandlerStateChange}
         >
-          {/* Handle */}
-          <View style={styles.handleContainer}>
-            <View style={styles.handle} />
-          </View>
+          <Animated.View>
+            <View style={styles.handleContainer}>
+              <View style={styles.handle} />
+            </View>
+            <View style={styles.header}>
+              <Text style={styles.headerText}>
+                {bookName} {chapterNum}:{verse.number}
+              </Text>
+              <Pressable onPress={handleClose} hitSlop={10}>
+                <Text style={styles.closeButton}>Done</Text>
+              </Pressable>
+            </View>
+          </Animated.View>
+        </PanGestureHandler>
 
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.headerText}>
-              {bookName} {chapterNum}:{verse.number}
-            </Text>
-            <Pressable onPress={handleClose} hitSlop={10}>
-              <Text style={styles.closeButton}>Done</Text>
-            </Pressable>
-          </View>
+        {/* Verse Preview */}
+        <ScrollView style={styles.versePreview} nestedScrollEnabled>
+          <Text style={styles.versePreviewText}>
+            "{verse.plainText || verse.text}"
+          </Text>
+        </ScrollView>
 
-          {/* Verse Preview */}
-          <ScrollView style={styles.versePreview} nestedScrollEnabled>
-            <Text style={styles.versePreviewText}>
-              "{verse.plainText || verse.text}"
-            </Text>
-          </ScrollView>
-
-          {/* Messages */}
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
-          >
-            {messages.length === 0 ? (
-              <View style={styles.emptyState}>
-                <Text style={styles.emptyStateText}>
-                  Ask anything about this verse
-                </Text>
-              </View>
-            ) : (
-              messages.map((msg, index) => (
-                <View
-                  key={index}
+        {/* Messages */}
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.messagesContainer}
+          contentContainerStyle={styles.messagesContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          {messages.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>
+                Ask anything about this verse
+              </Text>
+            </View>
+          ) : (
+            messages.map((msg, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.messageBubble,
+                  msg.role === "user" ? styles.userMessage : styles.assistantMessage,
+                ]}
+              >
+                <Text
                   style={[
-                    styles.messageBubble,
-                    msg.role === "user" ? styles.userMessage : styles.assistantMessage,
+                    styles.messageText,
+                    msg.role === "user" && styles.userMessageText,
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.messageText,
-                      msg.role === "user" && styles.userMessageText,
-                    ]}
-                  >
-                    {msg.content}
-                  </Text>
-                </View>
-              ))
-            )}
-            {isSending && (
-              <View style={[styles.messageBubble, styles.assistantMessage]}>
-                <ActivityIndicator size="small" color={isDark ? "#888" : "#666"} />
+                  {msg.content}
+                </Text>
               </View>
-            )}
-          </ScrollView>
+            ))
+          )}
+          {isSending && (
+            <View style={[styles.messageBubble, styles.assistantMessage]}>
+              <ActivityIndicator size="small" color={isDark ? "#888" : "#666"} />
+            </View>
+          )}
+        </ScrollView>
 
-          {/* Input */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Ask a question..."
-              placeholderTextColor={isDark ? "#666" : "#999"}
-              value={inputText}
-              onChangeText={setInputText}
-              multiline
-              maxLength={500}
-            />
-            <Pressable
-              style={[styles.sendButton, (!inputText.trim() || isSending) && styles.sendButtonDisabled]}
-              onPress={handleSend}
-              disabled={!inputText.trim() || isSending}
-            >
-              <Text style={styles.sendButtonText}>Send</Text>
-            </Pressable>
-          </View>
-        </KeyboardAvoidingView>
+        {/* Input */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Ask a question..."
+            placeholderTextColor={isDark ? "#666" : "#999"}
+            value={inputText}
+            onChangeText={setInputText}
+            multiline
+            maxLength={500}
+          />
+          <Pressable
+            style={[styles.sendButton, (!inputText.trim() || isSending) && styles.sendButtonDisabled]}
+            onPress={handleSend}
+            disabled={!inputText.trim() || isSending}
+          >
+            <Text style={styles.sendButtonText}>Send</Text>
+          </Pressable>
+        </View>
       </Animated.View>
     </View>
   );
@@ -253,14 +309,10 @@ const createStyles = (isDark: boolean, bottomInset: number) =>
       backgroundColor: "rgba(0, 0, 0, 0.4)",
     },
     panel: {
-      height: PANEL_HEIGHT,
       backgroundColor: isDark ? "#1a1a1a" : "#faf9f6",
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
       overflow: "hidden",
-    },
-    keyboardView: {
-      flex: 1,
     },
     handleContainer: {
       alignItems: "center",
