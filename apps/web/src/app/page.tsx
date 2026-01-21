@@ -22,22 +22,22 @@ const faqs = [
   {
     question: "What is the Plain English Book of Mormon?",
     answer:
-      "The Plain English Book of Mormon is a modern translation that converts archaic King James English into clear, accessible language. Pronouns like 'thee', 'thou', and 'ye' are updated to 'you', verbs like 'hath' become 'has', and phrases like 'it came to pass' are simplified—all while preserving the original meaning and spiritual depth of the scripture.",
+      "It's the Book of Mormon with the old-fashioned language updated. Pronouns like 'thee', 'thou', and 'ye' become 'you', verbs like 'hath' become 'has', and phrases like 'it came to pass' are simplified. The meaning stays the same—just easier to read.",
   },
   {
     question: "How was the Book of Mormon translated to plain English?",
     answer:
-      "The translation uses a combination of rule-based text transformations and AI-powered language processing. Common archaic patterns are systematically converted using proven linguistic rules, while more complex passages are refined using advanced language models to ensure natural, readable English that stays true to the original text.",
+      "We used a mix of find-and-replace rules for common patterns (like thee→you) and AI for trickier passages that needed more context to sound natural. Every verse was checked to make sure the meaning wasn't changed.",
   },
   {
     question: "Is the plain English version accurate to the original?",
     answer:
-      "Yes. The plain English translation preserves the complete meaning of every verse. No content is added, removed, or altered in meaning—only the archaic language patterns are modernized. You can view the original King James text alongside any verse to compare.",
+      "Yes. Nothing is added, removed, or changed in meaning—only the old language is updated. You can view the original King James text alongside any verse to compare.",
   },
   {
     question: "Who is this translation for?",
     answer:
-      "This translation is perfect for anyone who finds the archaic King James language challenging to read, including new readers, youth, those learning English as a second language, or anyone who simply prefers modern language. It makes the Book of Mormon accessible without requiring familiarity with 17th-century English.",
+      "Anyone who finds King James English hard to read—new readers, youth, people learning English, or anyone who just prefers modern language. You don't need to know what 'wherefore' means to understand the Book of Mormon.",
   },
 ];
 
@@ -252,9 +252,55 @@ export default function HomePage() {
             are updated to their modern equivalents.
           </p>
           <p>
-            The goal is accessibility without sacrificing substance—making these
-            ancient teachings approachable for contemporary readers while
-            honoring the sacred nature of the text.
+            The goal is to make it easier to read without losing any of the
+            meaning or reverence of the original.
+          </p>
+        </div>
+      </div>
+
+      {/* Why I Built This Section */}
+      <div className="mb-16">
+        <h2
+          className="text-2xl mb-4"
+          style={{
+            fontFamily: "var(--font-cormorant), serif",
+            fontWeight: 600,
+            color: "var(--color-text-primary)",
+          }}
+        >
+          Why I Built This
+        </h2>
+        <div
+          className="space-y-4 leading-relaxed"
+          style={{ color: "var(--color-text-secondary)" }}
+        >
+          <p>
+            Our bishop challenged the young men to read the Book of Mormon by
+            May. So one night, driving home from hockey practice, I had my son
+            read out loud to me. He&apos;s a smart kid, but reading old English
+            isn&apos;t fun for anyone. He complained about never understanding
+            what he reads—like we all do with the scriptures.
+          </p>
+          <p>
+            Then another night he was reading with my wife and they got to the
+            part where Nephi kills Laban with his own sword. He said
+            &ldquo;wait, what?? He did?!&rdquo; I swear we&apos;ve told him that
+            story a hundred times.
+          </p>
+          <p>
+            Around the same time, the Church started allowing other Bible
+            translations besides the King James Version. I&apos;m pretty techy,
+            so I thought: maybe I can solve both of my son&apos;s problems
+            without getting totally outlawed by the Church.
+          </p>
+          <p>
+            For the understanding part, I used AI to convert the King James
+            language into regular English. I spent a lot of time tuning it to
+            make sure the meaning stayed accurate. For the questions part, I
+            added an AI you can ask about any verse—tap the lightbulb, ask
+            whatever you&apos;re wondering, and it keeps a history so you can
+            look back at what you were thinking when you read it before. Like
+            advanced note-taking.
           </p>
         </div>
       </div>
