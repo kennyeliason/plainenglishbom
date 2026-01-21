@@ -20,24 +20,24 @@ export const metadata: Metadata = {
 
 const faqs = [
   {
-    question: "What is the Plain English Book of Mormon?",
-    answer:
-      "It's the Book of Mormon with the old-fashioned language updated. Pronouns like 'thee', 'thou', and 'ye' become 'you', verbs like 'hath' become 'has', and phrases like 'it came to pass' are simplified. The meaning stays the same—just easier to read.",
-  },
-  {
-    question: "How was the Book of Mormon translated to plain English?",
+    question: "How was this translated?",
     answer:
       "We used a mix of find-and-replace rules for common patterns (like thee→you) and AI for trickier passages that needed more context to sound natural. Every verse was checked to make sure the meaning wasn't changed.",
   },
   {
-    question: "Is the plain English version accurate to the original?",
+    question: "Is it accurate to the original?",
     answer:
       "Yes. Nothing is added, removed, or changed in meaning—only the old language is updated. You can view the original King James text alongside any verse to compare.",
   },
   {
-    question: "Who is this translation for?",
+    question: "Who is this for?",
     answer:
       "Anyone who finds King James English hard to read—new readers, youth, people learning English, or anyone who just prefers modern language. You don't need to know what 'wherefore' means to understand the Book of Mormon.",
+  },
+  {
+    question: "Why was this created?",
+    answer:
+      "Our bishop challenged the young men to read the Book of Mormon by May. One night, driving home from hockey practice, I had my son read out loud to me. He's a smart kid, but reading old English isn't fun for anyone. He complained about never understanding what he reads—like we all do. Then another night he was reading with my wife and got to the part where Nephi kills Laban. He said \"wait, what?? He did?!\" I swear we've told him that story a hundred times. So I thought: maybe I can fix this. I used AI to convert the King James language into regular English, spent a lot of time tuning it for accuracy, and added an AI you can ask questions about any verse—tap the lightbulb, ask whatever you're wondering, and it keeps a history so you can look back later.",
   },
 ];
 
@@ -166,142 +166,6 @@ export default function HomePage() {
               </Link>
             );
           })}
-        </div>
-      </div>
-
-      {/* What Is Section - optimized for featured snippets */}
-      <div className="mb-16">
-        <h2
-          className="text-2xl mb-4"
-          style={{
-            fontFamily: "var(--font-cormorant), serif",
-            fontWeight: 600,
-            color: "var(--color-text-primary)",
-          }}
-        >
-          What is the Plain English Book of Mormon?
-        </h2>
-        <p
-          className="text-lg leading-relaxed"
-          style={{ color: "var(--color-text-secondary)" }}
-        >
-          The <strong>Plain English Book of Mormon</strong> is a modern
-          translation that converts archaic King James English into clear,
-          accessible language. Pronouns like &ldquo;thee&rdquo; and
-          &ldquo;thou&rdquo; become &ldquo;you,&rdquo; verbs like
-          &ldquo;hath&rdquo; become &ldquo;has,&rdquo; and phrases like
-          &ldquo;it came to pass&rdquo; are simplified—all while preserving
-          the original meaning and spiritual power of the scripture.
-        </p>
-      </div>
-
-      {/* About Section */}
-      <div className="about-section mb-16">
-        <h2
-          className="text-2xl mb-4"
-          style={{
-            fontFamily: "var(--font-cormorant), serif",
-            fontWeight: 600,
-            color: "var(--color-text-primary)",
-          }}
-        >
-          About This Translation
-        </h2>
-        <div
-          className="space-y-4 leading-relaxed"
-          style={{ color: "var(--color-text-secondary)" }}
-        >
-          <p>
-            This project presents the Book of Mormon with its archaic King James
-            English carefully converted to plain, modern language. Phrases like{" "}
-            <em
-              style={{
-                color: "var(--color-text-tertiary)",
-                fontStyle: "italic",
-              }}
-            >
-              &ldquo;it came to pass&rdquo;
-            </em>{" "}
-            are simplified, and pronouns like{" "}
-            <em
-              style={{
-                color: "var(--color-text-tertiary)",
-                fontStyle: "italic",
-              }}
-            >
-              thee
-            </em>
-            ,{" "}
-            <em
-              style={{
-                color: "var(--color-text-tertiary)",
-                fontStyle: "italic",
-              }}
-            >
-              thou
-            </em>
-            , and{" "}
-            <em
-              style={{
-                color: "var(--color-text-tertiary)",
-                fontStyle: "italic",
-              }}
-            >
-              ye
-            </em>{" "}
-            are updated to their modern equivalents.
-          </p>
-          <p>
-            The goal is to make it easier to read without losing any of the
-            meaning or reverence of the original.
-          </p>
-        </div>
-      </div>
-
-      {/* Why I Built This Section */}
-      <div className="mb-16">
-        <h2
-          className="text-2xl mb-4"
-          style={{
-            fontFamily: "var(--font-cormorant), serif",
-            fontWeight: 600,
-            color: "var(--color-text-primary)",
-          }}
-        >
-          Why I Built This
-        </h2>
-        <div
-          className="space-y-4 leading-relaxed"
-          style={{ color: "var(--color-text-secondary)" }}
-        >
-          <p>
-            Our bishop challenged the young men to read the Book of Mormon by
-            May. So one night, driving home from hockey practice, I had my son
-            read out loud to me. He&apos;s a smart kid, but reading old English
-            isn&apos;t fun for anyone. He complained about never understanding
-            what he reads—like we all do with the scriptures.
-          </p>
-          <p>
-            Then another night he was reading with my wife and they got to the
-            part where Nephi kills Laban with his own sword. He said
-            &ldquo;wait, what?? He did?!&rdquo; I swear we&apos;ve told him that
-            story a hundred times.
-          </p>
-          <p>
-            Around the same time, the Church started allowing other Bible
-            translations besides the King James Version. I&apos;m pretty techy,
-            so I thought: maybe I can solve both of my son&apos;s problems
-            without getting totally outlawed by the Church.
-          </p>
-          <p>
-            For the understanding part, I used AI to convert the King James
-            language into regular English. I spent a lot of time tuning it to
-            make sure the meaning stayed accurate. For the questions part, I
-            added an AI you can ask about any verse—tap the lightbulb, ask
-            whatever you&apos;re wondering, and it keeps a history so you can
-            look back at what you were thinking when you read it before. Like
-            advanced note-taking.
-          </p>
         </div>
       </div>
 
