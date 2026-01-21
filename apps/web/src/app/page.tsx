@@ -27,17 +27,17 @@ const faqs = [
   {
     question: "Is it accurate to the original?",
     answer:
-      "Yes. Nothing is added, removed, or changed in meaning—only the old language is updated. You can view the original King James text alongside any verse to compare.",
+      "Yes. Nothing is added, removed, or changed in meaning. Only the old language is updated. You can view the original King James text alongside any verse to compare.",
   },
   {
     question: "Who is this for?",
     answer:
-      "Anyone who finds King James English hard to read—new readers, youth, people learning English, or anyone who just prefers modern language. You don't need to know what 'wherefore' means to understand the Book of Mormon.",
+      "Anyone who finds King James English hard to read: new readers, youth, people learning English, or anyone who just prefers modern language. You don't need to know what 'wherefore' means to understand the Book of Mormon.",
   },
   {
     question: "Why was this created?",
     answer:
-      "Our bishop challenged the young men to read the Book of Mormon by May. One night, driving home from hockey practice, I had my son read out loud to me. He's a smart kid, but reading old English isn't fun for anyone. He complained about never understanding what he reads—like we all do. Then another night he was reading with my wife and got to the part where Nephi kills Laban. He said \"wait, what?? He did?!\" I swear we've told him that story a hundred times. So I thought: maybe I can fix this. I used AI to convert the King James language into regular English, spent a lot of time tuning it for accuracy, and added an AI you can ask questions about any verse—tap the lightbulb, ask whatever you're wondering, and it keeps a history so you can look back later.",
+      "Our bishop challenged the young men to read the Book of Mormon by May. One night, driving home from hockey practice, I had my son read out loud to me. He's a smart kid, but reading old English isn't fun for anyone. He complained about never understanding what he reads (like we all do). Then another night he was reading with my wife and got to the part where Nephi kills Laban. He said \"wait, what?? He did?!\" I swear we've told him that story a hundred times. So I thought: maybe I can fix this. I used AI to convert the King James language into regular English, spent a lot of time tuning it for accuracy, and added an AI you can ask questions about any verse. Tap the lightbulb, ask whatever you're wondering, and it keeps a history so you can look back later.",
   },
 ];
 
