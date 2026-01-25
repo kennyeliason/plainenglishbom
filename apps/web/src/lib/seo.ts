@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://plainenglishbom.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.plainenglishbom.com";
 const SITE_NAME = "Plain English Book of Mormon";
 const SITE_DESCRIPTION =
   "The Book of Mormon translated into clear, modern English while preserving its original meaning and spiritual power.";
@@ -8,7 +8,9 @@ const SITE_DESCRIPTION =
 export function getCanonicalUrl(path: string = ""): string {
   const baseUrl = SITE_URL.replace(/\/$/, "");
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
-  return `${baseUrl}${cleanPath}`;
+  // Ensure trailing slash for consistency with Next.js trailingSlash: true config
+  const urlWithSlash = cleanPath === "/" ? cleanPath : `${cleanPath}/`;
+  return `${baseUrl}${urlWithSlash}`;
 }
 
 export function generatePageMetadata({

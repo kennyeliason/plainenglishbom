@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generatePageMetadata({
   title: "Support · Plain English Book of Mormon",
   description:
     "Get help with the Plain English Book of Mormon app. Contact us with questions, feedback, or issues.",
-};
+  path: "/support",
+});
 
 export default function SupportPage() {
   return (

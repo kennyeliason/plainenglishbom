@@ -25,7 +25,7 @@ const sourceSerif = Source_Serif_4({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://plainenglishbom.com"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://www.plainenglishbom.com"
   ),
   title: {
     default: "Plain English Book of Mormon",

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = generatePageMetadata({
   title: "Privacy Policy · Plain English Book of Mormon",
   description:
     "Privacy policy for the Plain English Book of Mormon app and website.",
-};
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

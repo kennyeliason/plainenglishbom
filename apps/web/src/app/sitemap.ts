@@ -3,7 +3,7 @@ import { getAllBooks, slugify } from "@/lib/data";
 import { listAvailableComparisons } from "@/lib/comparison";
 
 // Get the base URL from environment variable or use default
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://plainenglishbom.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.plainenglishbom.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = SITE_URL.replace(/\/$/, "");
@@ -11,9 +11,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Home page - highest priority
   urls.push({
-    url: baseUrl,
+    url: `${baseUrl}/`,
     changeFrequency: "weekly",
     priority: 1.0,
+  });
+
+  // Static pages
+  urls.push({
+    url: `${baseUrl}/privacy/`,
+    changeFrequency: "yearly",
+    priority: 0.3,
+  });
+  urls.push({
+    url: `${baseUrl}/support/`,
+    changeFrequency: "yearly",
+    priority: 0.3,
   });
 
   // Get all books and chapters
@@ -31,7 +43,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Add all book pages
   for (const book of books) {
     const bookSlug = slugify(book.shortName);
-    const bookUrl = `${baseUrl}/${bookSlug}`;
+    const bookUrl = `${baseUrl}/${bookSlug}/`;
 
     urls.push({
       url: bookUrl,
@@ -41,7 +53,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     // Add all chapter pages for this book
     for (const chapter of book.chapters) {
-      const chapterUrl = `${baseUrl}/${bookSlug}/${chapter.number}`;
+      const chapterUrl = `${baseUrl}/${bookSlug}/${chapter.number}/`;
 
       urls.push({
         url: chapterUrl,
@@ -53,7 +65,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       // Match by book name (with spaces) and chapter number
       const comparisonKey = `${book.shortName}-${chapter.number}`;
       if (comparisonMap.has(comparisonKey) && book.shortName !== "1 Nephi") {
-        const compareUrl = `${baseUrl}/compare/${bookSlug}/${chapter.number}`;
+        const compareUrl = `${baseUrl}/compare/${bookSlug}/${chapter.number}/`;
 
         urls.push({
           url: compareUrl,
