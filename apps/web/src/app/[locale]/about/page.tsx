@@ -81,21 +81,47 @@ export default async function AboutPage({ params }: AboutPageProps) {
               color: "var(--color-text-primary)",
             }}
           >
-            Why Plain English?
+            About the Original Language
           </h2>
           <p className="mb-4">
-            The Book of Mormon was originally written using the language patterns
-            of the 1611 King James Bible - "thee," "thou," "hath," "wherefore,"
-            and complex sentence structures that can be barriers to understanding
-            for modern readers.
+            When Joseph Smith translated the Book of Mormon in 1829, the words
+            came through divine revelation in the style of the King James Bible.
+            Whether this was because scriptural language carried that cadence in
+            his era, or because it was how God intended it to sound, the result
+            was a sacred text with language patterns from 1611: "thee," "thou,"
+            "hath," "wherefore," and sentence structures that feel ancient and
+            reverent.
           </p>
+          <p className="mb-4">
+            That language is beautiful, but it can also be a barrier. Many modern
+            readers struggle with archaic English, and the meaning gets lost in
+            unfamiliar words and constructions.
+          </p>
+        </section>
+
+        <section className="mb-10">
+          <h2
+            className="text-2xl mb-4"
+            style={{
+              fontFamily: "var(--font-cormorant), serif",
+              fontWeight: 600,
+              color: "var(--color-text-primary)",
+            }}
+          >
+            Why This Project Exists
+          </h2>
           <p className="mb-4">
             This project aims to make the Book of Mormon accessible to everyone
             by converting archaic language into clear, contemporary English while
             preserving the original meaning and message.
           </p>
+          <p className="mb-4">
+            This is not a replacement for the original text. The original
+            translation stands as scripture. This is simply a reading aid - a way
+            to understand what the verses mean so you can return to the original
+            with greater comprehension.
+          </p>
           <p>
-            This is not a replacement for the original text. It's a reading aid.
             Verse numbers are preserved so you can easily reference the original
             at any time.
           </p>
