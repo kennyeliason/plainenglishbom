@@ -1,0 +1,6 @@
+# Generated book files
+output/
+dist/
+
+# Dependencies
+node_modules/

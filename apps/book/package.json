@@ -1,0 +1,22 @@
+{
+  "name": "@plainenglishbom/book",
+  "version": "2026.01.27",
+  "private": true,
+  "description": "Generate print and ebook editions of the Plain English Book of Mormon",
+  "scripts": {
+    "generate": "tsx src/index.ts",
+    "generate:pdf": "tsx src/index.ts --format pdf",
+    "generate:epub": "tsx src/index.ts --format epub",
+    "generate:all": "tsx src/index.ts --format all"
+  },
+  "dependencies": {
+    "@plainenglishbom/core": "workspace:*",
+    "pdfkit": "^0.15.0",
+    "epub-gen-memory": "^1.0.10"
+  },
+  "devDependencies": {
+    "@types/pdfkit": "^0.13.8",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}

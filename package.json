@@ -14,12 +14,19 @@
     "transform:ai": "tsx scripts/transform-text.ts ai",
     "translate": "tsx scripts/translate-to-language.ts",
     "sync-mobile-data": "tsx scripts/sync-mobile-data.ts",
-    "generate-summaries": "tsx scripts/generate-summaries.ts"
+    "sync-translations": "tsx scripts/sync-translations.ts",
+    "generate-summaries": "tsx scripts/generate-summaries.ts",
+    "book": "turbo generate --filter=@plainenglishbom/book",
+    "book:pdf": "pnpm --filter @plainenglishbom/book generate:pdf",
+    "book:epub": "pnpm --filter @plainenglishbom/book generate:epub"
   },
   "devDependencies": {
-    "turbo": "^2.3.3",
     "tsx": "^4.21.0",
+    "turbo": "^2.3.3",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@9.15.0"
+  "packageManager": "pnpm@9.15.0",
+  "dependencies": {
+    "@plainenglishbom/translations": "github:plainenglishbom/plainenglishbom-translations"
+  }
 }
