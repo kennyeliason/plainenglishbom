@@ -5,8 +5,15 @@ export type { Verse, Chapter, Book, BookOfMormon } from "./types";
 export {
   slugify,
   unslugify,
+  unslugifyForLocale,
   getBookSlugs,
+  getBookSlugsForLocale,
+  translateSlug,
+  getCanonicalSlug,
+  isValidSlug,
   BOOK_SLUG_MAP,
+  BOOK_SLUGS,
+  SLUG_EQUIVALENTS,
 } from "./data";
 export type { DataProvider } from "./data";
 

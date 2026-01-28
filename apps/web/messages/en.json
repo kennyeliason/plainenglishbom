@@ -1,0 +1,71 @@
+{
+  "common": {
+    "siteName": "Plain English Book of Mormon",
+    "siteTagline": "In Plain English",
+    "skipToContent": "Skip to content"
+  },
+  "navigation": {
+    "allBooks": "All Books",
+    "previous": "Previous",
+    "next": "Next",
+    "chapter": "Chapter",
+    "backToChapter": "Back to Chapter",
+    "backToHome": "Back to Home"
+  },
+  "home": {
+    "title": "The Book of Mormon",
+    "subtitle": "In Plain English",
+    "description": "Scripture translated into clear, modern language while preserving its original meaning and spiritual power. Read the ancient text as it was meant to be understood.",
+    "selectBook": "Select a Book",
+    "beginReading": "Begin reading",
+    "continueReading": "Continue Reading",
+    "faq": "Frequently Asked Questions"
+  },
+  "chapter": {
+    "verses": "{count, plural, one {# verse} other {# verses}}",
+    "chapters": "{count, plural, one {# chapter} other {# chapters}}",
+    "showOriginal": "Show original text",
+    "viewAllChapters": "View all chapters",
+    "overview": "Overview",
+    "compareModels": "Compare Models"
+  },
+  "book": {
+    "selectChapter": "Select a Chapter",
+    "beginWithChapter1": "Begin with Chapter 1",
+    "notSureWhereToStart": "Not sure where to start?"
+  },
+  "footer": {
+    "tagline": "Scripture made accessible for modern readers",
+    "sourceAttribution": "Source text from"
+  },
+  "notFound": {
+    "title": "404",
+    "label": "Page Not Found",
+    "subtitle": "Lost in the wilderness",
+    "description": "The page you seek cannot be found. Perhaps it was translated to another location.",
+    "returnHome": "Return Home"
+  },
+  "faq": {
+    "q1": "How was this translated?",
+    "a1": "We used a mix of find-and-replace rules for common patterns (like thee→you) and AI for trickier passages that needed more context to sound natural. Every verse was checked to make sure the meaning wasn't changed.",
+    "q2": "Is it accurate to the original?",
+    "a2": "Yes. Nothing is added, removed, or changed in meaning. Only the old language is updated. You can view the original King James text alongside any verse to compare.",
+    "q3": "Who is this for?",
+    "a3": "Anyone who finds King James English hard to read: new readers, youth, people learning English, or anyone who just prefers modern language. You don't need to know what 'wherefore' means to understand the Book of Mormon.",
+    "q4": "Why was this created?",
+    "a4": "Our bishop challenged the young men to read the Book of Mormon by May. One night, driving home from hockey practice, I had my son read out loud to me. He's a smart kid, but reading old English isn't fun for anyone. He complained about never understanding what he reads (like we all do). Then another night he was reading with my wife and got to the part where Nephi kills Laban. He said \"wait, what?? He did?!\" I swear we've told him that story a hundred times. So I thought: maybe I can fix this. I used AI to convert the King James language into regular English, spent a lot of time tuning it for accuracy, and added an AI you can ask questions about any verse. Tap the lightbulb, ask whatever you're wondering, and it keeps a history so you can look back later."
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "switchTo": "Switch to {language}"
+  },
+  "compare": {
+    "title": "Model Comparison",
+    "originalText": "Original Text",
+    "translations": "Translations",
+    "chars": "{count} chars",
+    "verse": "Verse {number}",
+    "note": "This comparison shows translations from different AI models for the same verses. Use this to evaluate which model produces the best results for your needs."
+  }
+}

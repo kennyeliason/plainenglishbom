@@ -18,6 +18,7 @@ import { getBook, getChapter, unslugify, slugify } from "../../lib/data";
 import { hasApiKey as checkApiKey } from "../../lib/ai-client";
 import { VerseInsightPanel } from "../../components/VerseInsightPanel";
 import { ChapterInsightPanel } from "../../components/ChapterInsightPanel";
+import { useLocale, useStrings } from "../../lib/locale";
 
 // Verse card component with expandable original text
 function VerseCard({
@@ -28,6 +29,8 @@ function VerseCard({
   onAIPress,
   hasApiKey,
   hasChatHistory,
+  showOriginalLabel,
+  hideOriginalLabel,
 }: {
   verse: Verse;
   isDark: boolean;
@@ -36,6 +39,8 @@ function VerseCard({
   onAIPress?: (verse: Verse) => void;
   hasApiKey?: boolean;
   hasChatHistory?: boolean;
+  showOriginalLabel: string;
+  hideOriginalLabel: string;
 }) {
   const [showOriginal, setShowOriginal] = useState(false);
   const styles = createStyles(isDark);
@@ -80,7 +85,7 @@ function VerseCard({
               style={styles.toggleArrow}
             />
             <Text style={styles.toggleText}>
-              {showOriginal ? "Hide" : "Show"} original text
+              {showOriginal ? hideOriginalLabel : showOriginalLabel}
             </Text>
           </Pressable>
         )}
@@ -99,11 +104,13 @@ export default function ChapterScreen() {
     verse?: string;
   }>();
 
-  const bookName = unslugify(bookSlug || "");
+  const { locale } = useLocale();
+  const strings = useStrings();
+  const bookName = unslugify(bookSlug || "", locale);
   const chapterNum = parseInt(chapterStr || "1", 10);
   const targetVerse = verseStr ? parseInt(verseStr, 10) : null;
-  const book = getBook(bookName);
-  const chapter = getChapter(bookName, chapterNum);
+  const book = getBook(bookName, locale);
+  const chapter = getChapter(bookName, chapterNum, locale);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
@@ -196,7 +203,7 @@ export default function ChapterScreen() {
   if (!book || !chapter) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Chapter not found</Text>
+        <Text style={styles.errorText}>{strings.chapterNotFound}</Text>
       </View>
     );
   }
@@ -234,9 +241,6 @@ export default function ChapterScreen() {
       <Stack.Screen
         options={{
           title: `${book.shortName} ${chapterNum}`,
-          headerBackgroundContainerStyle: {
-            backgroundColor: "transparent",
-          },
           headerRight: () => (
             <Pressable
               onPress={handleChapterChatPress}
@@ -267,7 +271,7 @@ export default function ChapterScreen() {
           {/* Chapter Summary */}
           {chapter.summary && (
             <View style={styles.summaryContainer}>
-              <Text style={styles.summaryLabel}>Overview</Text>
+              <Text style={styles.summaryLabel}>{strings.overview}</Text>
               <Text style={styles.summaryText}>{chapter.summary}</Text>
             </View>
           )}
@@ -284,6 +288,8 @@ export default function ChapterScreen() {
                 onAIPress={handleAIPress}
                 hasApiKey={hasKey}
                 hasChatHistory={versesWithHistory.has(verse.number)}
+                showOriginalLabel={strings.showOriginal}
+                hideOriginalLabel={strings.hideOriginal}
               />
             ))}
           </View>
@@ -299,8 +305,8 @@ export default function ChapterScreen() {
           >
             <Text style={styles.navArrowLeft}>←</Text>
             <View>
-              <Text style={styles.navLabel}>Previous</Text>
-              <Text style={styles.navChapter}>Chapter {prevChapter}</Text>
+              <Text style={styles.navLabel}>{strings.previous}</Text>
+              <Text style={styles.navChapter}>{strings.chapter} {prevChapter}</Text>
             </View>
           </Pressable>
         ) : (
@@ -312,8 +318,8 @@ export default function ChapterScreen() {
             onPress={() => navigateToChapter(nextChapter)}
           >
             <View style={styles.navTextRight}>
-              <Text style={styles.navLabel}>Next</Text>
-              <Text style={styles.navChapter}>Chapter {nextChapter}</Text>
+              <Text style={styles.navLabel}>{strings.next}</Text>
+              <Text style={styles.navChapter}>{strings.chapter} {nextChapter}</Text>
             </View>
             <Text style={styles.navArrowRight}>→</Text>
           </Pressable>

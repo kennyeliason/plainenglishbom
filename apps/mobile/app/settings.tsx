@@ -12,11 +12,14 @@ import {
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { saveApiKey, getApiKey, removeApiKey } from "../lib/ai-client";
+import { useLocale, useStrings } from "../lib/locale";
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const styles = createStyles(isDark);
+  const { locale, setLocale, isLoading: localeLoading } = useLocale();
+  const strings = useStrings();
 
   const [apiKey, setApiKey] = useState("");
   const [hasKey, setHasKey] = useState(false);
@@ -38,7 +41,7 @@ export default function SettingsScreen() {
 
   async function handleSaveKey() {
     if (!apiKey.startsWith("sk-")) {
-      Alert.alert("Invalid Key", "OpenAI API keys start with 'sk-'");
+      Alert.alert(strings.invalidKey, strings.invalidKeyMessage);
       return;
     }
 
@@ -46,20 +49,20 @@ export default function SettingsScreen() {
       await saveApiKey(apiKey);
       setHasKey(true);
       setApiKey("sk-..." + apiKey.slice(-4));
-      Alert.alert("Success", "API key saved securely");
+      Alert.alert(strings.success, strings.apiKeySaved);
     } catch (error) {
-      Alert.alert("Error", "Failed to save API key");
+      Alert.alert(strings.error, strings.apiKeyError);
     }
   }
 
   async function handleRemoveKey() {
     Alert.alert(
-      "Remove API Key",
-      "Are you sure you want to remove your API key?",
+      strings.removeApiKey,
+      strings.removeApiKeyConfirm,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: strings.cancel, style: "cancel" },
         {
-          text: "Remove",
+          text: strings.remove,
           style: "destructive",
           onPress: async () => {
             await removeApiKey();
@@ -71,38 +74,96 @@ export default function SettingsScreen() {
     );
   }
 
-  if (isLoading) {
+  function handleLanguageChange(newLocale: "en" | "es") {
+    setLocale(newLocale);
+  }
+
+  if (isLoading || localeLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <Stack.Screen options={{ title: "Settings" }} />
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Stack.Screen options={{ title: strings.settings }} />
+        <Text style={styles.loadingText}>{strings.loading}</Text>
       </SafeAreaView>
     );
   }
 
   return (
     <>
-      <Stack.Screen options={{ title: "Settings" }} />
+      <Stack.Screen options={{ title: strings.settings }} />
       <ScrollView style={styles.container}>
+        {/* Language Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>AI Study Companion</Text>
+          <Text style={styles.sectionTitle}>{strings.language}</Text>
           <Text style={styles.sectionDescription}>
-            Connect your OpenAI account to get AI-powered insights on any verse.
-            Tap the sparkle icon on any verse to learn more about it.
+            {strings.languageDescription}
           </Text>
 
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>OpenAI API Key</Text>
+            <Pressable
+              style={[
+                styles.languageOption,
+                locale === "en" && styles.languageOptionSelected,
+              ]}
+              onPress={() => handleLanguageChange("en")}
+            >
+              <Text
+                style={[
+                  styles.languageText,
+                  locale === "en" && styles.languageTextSelected,
+                ]}
+              >
+                English
+              </Text>
+              {locale === "en" && (
+                <View style={styles.checkmark}>
+                  <Text style={styles.checkmarkText}>✓</Text>
+                </View>
+              )}
+            </Pressable>
+            <Pressable
+              style={[
+                styles.languageOption,
+                styles.languageOptionLast,
+                locale === "es" && styles.languageOptionSelected,
+              ]}
+              onPress={() => handleLanguageChange("es")}
+            >
+              <Text
+                style={[
+                  styles.languageText,
+                  locale === "es" && styles.languageTextSelected,
+                ]}
+              >
+                Español
+              </Text>
+              {locale === "es" && (
+                <View style={styles.checkmark}>
+                  <Text style={styles.checkmarkText}>✓</Text>
+                </View>
+              )}
+            </Pressable>
+          </View>
+        </View>
+
+        {/* AI Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{strings.aiStudyCompanion}</Text>
+          <Text style={styles.sectionDescription}>
+            {strings.aiDescription}
+          </Text>
+
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>{strings.openaiApiKey}</Text>
 
             {hasKey ? (
               <View style={styles.keyConnected}>
                 <View style={styles.keyStatus}>
                   <View style={styles.statusDot} />
-                  <Text style={styles.statusText}>Connected</Text>
+                  <Text style={styles.statusText}>{strings.connected}</Text>
                 </View>
                 <Text style={styles.maskedKey}>{apiKey}</Text>
                 <Pressable style={styles.removeButton} onPress={handleRemoveKey}>
-                  <Text style={styles.removeButtonText}>Disconnect</Text>
+                  <Text style={styles.removeButtonText}>{strings.disconnect}</Text>
                 </Pressable>
               </View>
             ) : (
@@ -122,26 +183,25 @@ export default function SettingsScreen() {
                   onPress={handleSaveKey}
                   disabled={!apiKey}
                 >
-                  <Text style={styles.saveButtonText}>Connect</Text>
+                  <Text style={styles.saveButtonText}>{strings.connect}</Text>
                 </Pressable>
               </View>
             )}
 
             <Text style={styles.helpText}>
-              Get your API key from{" "}
+              {strings.getApiKey}{" "}
               <Text style={styles.linkText}>platform.openai.com</Text>
             </Text>
           </View>
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
+          <Text style={styles.sectionTitle}>{strings.about}</Text>
           <View style={styles.card}>
             <Text style={styles.aboutText}>
-              Plain English Book of Mormon translates scripture into clear,
-              modern language while preserving its original meaning.
+              {strings.aboutText}
             </Text>
-            <Text style={styles.versionText}>Version 2026.1.12</Text>
+            <Text style={styles.versionText}>{strings.version} 2026.1.12</Text>
           </View>
         </View>
       </ScrollView>
@@ -271,5 +331,41 @@ const createStyles = (isDark: boolean) =>
     versionText: {
       fontSize: 12,
       color: isDark ? "#666" : "#999",
+    },
+    languageOption: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 14,
+      paddingHorizontal: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: isDark ? "#333" : "#e8e4dc",
+    },
+    languageOptionLast: {
+      borderBottomWidth: 0,
+    },
+    languageOptionSelected: {
+      backgroundColor: "transparent",
+    },
+    languageText: {
+      fontSize: 16,
+      color: isDark ? "#aaa" : "#666",
+    },
+    languageTextSelected: {
+      color: isDark ? "#faf9f6" : "#1a1a1a",
+      fontWeight: "600",
+    },
+    checkmark: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: isDark ? "#4a6a8a" : "#1a4a6e",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    checkmarkText: {
+      color: "#fff",
+      fontSize: 14,
+      fontWeight: "600",
     },
   });

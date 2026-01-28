@@ -8,11 +8,14 @@ import {
   useColorScheme,
 } from "react-native";
 import { getBook, unslugify, slugify } from "../../lib/data";
+import { useLocale, useStrings } from "../../lib/locale";
 
 export default function BookScreen() {
   const { book: bookSlug } = useLocalSearchParams<{ book: string }>();
-  const bookName = unslugify(bookSlug || "");
-  const book = getBook(bookName);
+  const { locale } = useLocale();
+  const strings = useStrings();
+  const bookName = unslugify(bookSlug || "", locale);
+  const book = getBook(bookName, locale);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
@@ -21,7 +24,7 @@ export default function BookScreen() {
   if (!book) {
     return (
       <View style={styles.container}>
-        <Text style={styles.errorText}>Book not found</Text>
+        <Text style={styles.errorText}>{strings.bookNotFound}</Text>
       </View>
     );
   }
@@ -51,7 +54,7 @@ export default function BookScreen() {
               <Pressable style={styles.chapterCard}>
                 <Text style={styles.chapterNumber}>{chapter.number}</Text>
                 <Text style={styles.verseCount}>
-                  {chapter.verses.length} verses
+                  {chapter.verses.length} {strings.verses}
                 </Text>
               </Pressable>
             </Link>

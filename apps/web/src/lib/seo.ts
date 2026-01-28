@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { translateSlug } from "@plainenglishbom/core";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.plainenglishbom.com";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.plainenglishbom.com";
 const SITE_NAME = "Plain English Book of Mormon";
+const SITE_NAME_ES = "Libro de Mormón en Español Sencillo";
 const SITE_DESCRIPTION =
   "The Book of Mormon translated into clear, modern English while preserving its original meaning and spiritual power.";
-
 export function getCanonicalUrl(path: string = ""): string {
   const baseUrl = SITE_URL.replace(/\/$/, "");
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
@@ -13,33 +15,81 @@ export function getCanonicalUrl(path: string = ""): string {
   return `${baseUrl}${urlWithSlash}`;
 }
 
+/**
+ * Translate a path from one locale to another.
+ * Handles book slug translation for chapter/book paths.
+ */
+function translatePath(
+  path: string,
+  fromLocale: string,
+  toLocale: string
+): string {
+  if (fromLocale === toLocale) return path;
+
+  // Parse the path segments
+  const segments = path.split("/").filter(Boolean);
+
+  // Remove locale prefix if present
+  if (segments[0] === "en" || segments[0] === "es") {
+    segments.shift();
+  }
+
+  if (segments.length > 0) {
+    // Check if first segment could be a book slug and translate it
+    const translatedSlug = translateSlug(segments[0], fromLocale, toLocale);
+    if (translatedSlug !== segments[0]) {
+      segments[0] = translatedSlug;
+    }
+  }
+
+  // Rebuild path with new locale prefix
+  const translatedPath = segments.length > 0 ? `/${segments.join("/")}` : "";
+  return toLocale === "en" ? translatedPath || "/" : `/${toLocale}${translatedPath}`;
+}
+
 export function generatePageMetadata({
   title,
   description,
   path,
   image,
   type = "website",
+  locale = "en",
 }: {
   title: string;
   description: string;
   path?: string;
   image?: string;
   type?: "website" | "article" | "book";
+  locale?: string;
 }): Metadata {
   const canonicalUrl = path ? getCanonicalUrl(path) : getCanonicalUrl();
   const ogImage = image || `${SITE_URL}/opengraph-image`;
+  const siteName = locale === "es" ? SITE_NAME_ES : SITE_NAME;
+
+  // Generate alternate language URLs
+  const currentPath = path || "/";
+  const enPath =
+    locale === "en" ? currentPath : translatePath(currentPath, locale, "en");
+  const esPath =
+    locale === "es" ? currentPath : translatePath(currentPath, locale, "es");
 
   return {
     title,
     description,
     alternates: {
       canonical: canonicalUrl,
+      languages: {
+        en: getCanonicalUrl(enPath),
+        es: getCanonicalUrl(esPath),
+        "x-default": getCanonicalUrl(enPath),
+      },
     },
     openGraph: {
       title,
       description,
       url: canonicalUrl,
-      siteName: SITE_NAME,
+      siteName,
+      locale: locale === "es" ? "es_ES" : "en_US",
       images: [
         {
           url: ogImage,
@@ -183,7 +233,9 @@ export function generateArticleSchema({
   return generateSchemaMarkup(schema);
 }
 
-export function generateBreadcrumbSchema(items: Array<{ name: string; url: string }>) {
+export function generateBreadcrumbSchema(
+  items: Array<{ name: string; url: string }>
+) {
   return generateSchemaMarkup({
     "@type": "BreadcrumbList",
     itemListElement: items.map((item, index) => ({
@@ -195,7 +247,9 @@ export function generateBreadcrumbSchema(items: Array<{ name: string; url: strin
   });
 }
 
-export function generateFAQSchema(faqs: Array<{ question: string; answer: string }>) {
+export function generateFAQSchema(
+  faqs: Array<{ question: string; answer: string }>
+) {
   return generateSchemaMarkup({
     "@type": "FAQPage",
     mainEntity: faqs.map((faq) => ({

@@ -1,37 +1,98 @@
 import * as fs from "fs";
 import * as path from "path";
 import type { BookOfMormon, Book, Chapter } from "@plainenglishbom/core";
-import { slugify, unslugify, getBookSlugs } from "@plainenglishbom/core";
+import {
+  slugify,
+  unslugify,
+  unslugifyForLocale,
+  getBookSlugs,
+  getBookSlugsForLocale,
+  translateSlug,
+  getCanonicalSlug,
+  isValidSlug,
+} from "@plainenglishbom/core";
+import { defaultLocale } from "../../i18n/config";
 
 // Re-export core utilities for convenience
-export { slugify, unslugify, getBookSlugs };
+export {
+  slugify,
+  unslugify,
+  unslugifyForLocale,
+  getBookSlugs,
+  getBookSlugsForLocale,
+  translateSlug,
+  getCanonicalSlug,
+  isValidSlug,
+};
 
-const DATA_PATH = path.join(process.cwd(), "../../data/transformed/parsed.json");
+// Data paths per locale
+const DATA_PATHS: Record<string, string> = {
+  en: path.join(process.cwd(), "../../data/transformed/en/parsed.json"),
+  es: path.join(process.cwd(), "../../data/transformed/es/parsed.json"),
+};
 
-let cachedData: BookOfMormon | null = null;
+// Cache per locale
+const cachedData: Record<string, BookOfMormon | null> = {};
 
-export function getBookOfMormon(): BookOfMormon {
-  if (cachedData) return cachedData;
-
-  const content = fs.readFileSync(DATA_PATH, "utf-8");
-  cachedData = JSON.parse(content) as BookOfMormon;
-  return cachedData;
+/**
+ * Check if data exists for a given locale.
+ */
+export function hasDataForLocale(locale: string): boolean {
+  const dataPath = DATA_PATHS[locale];
+  if (!dataPath) return false;
+  return fs.existsSync(dataPath);
 }
 
-export function getAllBooks(): Book[] {
-  return getBookOfMormon().books;
+/**
+ * Get the Book of Mormon data for a given locale.
+ * Falls back to default locale if locale data doesn't exist.
+ */
+export function getBookOfMormon(locale: string = defaultLocale): BookOfMormon {
+  // Use the requested locale if data exists, otherwise fall back to default
+  const effectiveLocale = hasDataForLocale(locale) ? locale : defaultLocale;
+
+  if (cachedData[effectiveLocale]) {
+    return cachedData[effectiveLocale]!;
+  }
+
+  const dataPath = DATA_PATHS[effectiveLocale] ?? DATA_PATHS[defaultLocale];
+  const content = fs.readFileSync(dataPath, "utf-8");
+  cachedData[effectiveLocale] = JSON.parse(content) as BookOfMormon;
+  return cachedData[effectiveLocale]!;
 }
 
-export function getBook(shortName: string): Book | undefined {
-  return getAllBooks().find(
-    (b) => b.shortName.toLowerCase() === shortName.toLowerCase()
+/**
+ * Get all books for a given locale.
+ */
+export function getAllBooks(locale: string = defaultLocale): Book[] {
+  return getBookOfMormon(locale).books;
+}
+
+/**
+ * Get a specific book by short name for a given locale.
+ * Handles localized slugs by converting to canonical English names.
+ */
+export function getBook(
+  shortName: string,
+  locale: string = defaultLocale
+): Book | undefined {
+  // Convert localized slug to English book name for lookup
+  const canonicalSlug = getCanonicalSlug(shortName.toLowerCase());
+  const englishName = unslugify(canonicalSlug);
+
+  return getAllBooks(locale).find(
+    (b) => b.shortName.toLowerCase() === englishName.toLowerCase()
   );
 }
 
+/**
+ * Get a specific chapter by book short name and chapter number.
+ */
 export function getChapter(
   bookShortName: string,
-  chapterNumber: number
+  chapterNumber: number,
+  locale: string = defaultLocale
 ): Chapter | undefined {
-  const book = getBook(bookShortName);
+  const book = getBook(bookShortName, locale);
   return book?.chapters.find((c) => c.number === chapterNumber);
 }

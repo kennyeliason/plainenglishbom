@@ -12,6 +12,7 @@
     "transform": "tsx scripts/transform-text.ts",
     "transform:rules": "tsx scripts/transform-text.ts rules",
     "transform:ai": "tsx scripts/transform-text.ts ai",
+    "translate": "tsx scripts/translate-to-language.ts",
     "sync-mobile-data": "tsx scripts/sync-mobile-data.ts",
     "generate-summaries": "tsx scripts/generate-summaries.ts"
   },

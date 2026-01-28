@@ -1,0 +1,71 @@
+{
+  "common": {
+    "siteName": "Libro de Mormón en Español Sencillo",
+    "siteTagline": "En Español Sencillo",
+    "skipToContent": "Saltar al contenido"
+  },
+  "navigation": {
+    "allBooks": "Todos los Libros",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "chapter": "Capítulo",
+    "backToChapter": "Volver al Capítulo",
+    "backToHome": "Volver al Inicio"
+  },
+  "home": {
+    "title": "El Libro de Mormón",
+    "subtitle": "En Español Sencillo",
+    "description": "Escrituras traducidas a un lenguaje moderno y claro, preservando su significado original y poder espiritual. Lee el texto antiguo como fue pensado para ser entendido.",
+    "selectBook": "Selecciona un Libro",
+    "beginReading": "Comenzar a leer",
+    "continueReading": "Continuar Leyendo",
+    "faq": "Preguntas Frecuentes"
+  },
+  "chapter": {
+    "verses": "{count, plural, one {# versículo} other {# versículos}}",
+    "chapters": "{count, plural, one {# capítulo} other {# capítulos}}",
+    "showOriginal": "Mostrar texto original",
+    "viewAllChapters": "Ver todos los capítulos",
+    "overview": "Resumen",
+    "compareModels": "Comparar Modelos"
+  },
+  "book": {
+    "selectChapter": "Selecciona un Capítulo",
+    "beginWithChapter1": "Comenzar con el Capítulo 1",
+    "notSureWhereToStart": "¿No sabes por dónde empezar?"
+  },
+  "footer": {
+    "tagline": "Escrituras accesibles para lectores modernos",
+    "sourceAttribution": "Texto fuente de"
+  },
+  "notFound": {
+    "title": "404",
+    "label": "Página No Encontrada",
+    "subtitle": "Perdido en el desierto",
+    "description": "La página que buscas no se puede encontrar. Quizás fue traducida a otro lugar.",
+    "returnHome": "Volver al Inicio"
+  },
+  "faq": {
+    "q1": "¿Cómo fue traducido?",
+    "a1": "Usamos una combinación de reglas de búsqueda y reemplazo para patrones comunes y la IA para pasajes más difíciles que necesitaban más contexto para sonar naturales. Cada versículo fue revisado para asegurar que el significado no cambiara.",
+    "q2": "¿Es preciso al original?",
+    "a2": "Sí. Nada se agrega, elimina o cambia en significado. Solo se actualiza el lenguaje antiguo. Puedes ver el texto original en inglés antiguo junto a cualquier versículo para comparar.",
+    "q3": "¿Para quién es esto?",
+    "a3": "Para cualquiera que encuentre difícil leer el inglés antiguo: nuevos lectores, jóvenes, personas aprendiendo inglés, o cualquiera que simplemente prefiera un lenguaje moderno.",
+    "q4": "¿Por qué fue creado?",
+    "a4": "Nuestro obispo retó a los jóvenes a leer el Libro de Mormón para mayo. Una noche, regresando del entrenamiento de hockey, hice que mi hijo leyera en voz alta. Es un chico inteligente, pero leer inglés antiguo no es divertido para nadie. Se quejaba de nunca entender lo que lee. Otra noche estaba leyendo con mi esposa y llegó a la parte donde Nefi mata a Labán. Dijo \"¡espera, qué?? ¿Lo hizo?!\" Juro que le hemos contado esa historia cien veces. Así que pensé: tal vez puedo arreglar esto."
+  },
+  "language": {
+    "en": "English",
+    "es": "Español",
+    "switchTo": "Cambiar a {language}"
+  },
+  "compare": {
+    "title": "Comparación de Modelos",
+    "originalText": "Texto Original",
+    "translations": "Traducciones",
+    "chars": "{count} caracteres",
+    "verse": "Versículo {number}",
+    "note": "Esta comparación muestra traducciones de diferentes modelos de IA para los mismos versículos. Úsala para evaluar qué modelo produce los mejores resultados para tus necesidades."
+  }
+}

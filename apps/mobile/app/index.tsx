@@ -13,9 +13,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { FontAwesome } from "@expo/vector-icons";
 import { READING_PROGRESS_KEY, type ReadingProgress } from "@plainenglishbom/core";
 import { getAllBooks, slugify } from "../lib/data";
+import { useLocale, useStrings } from "../lib/locale";
 
 export default function HomeScreen() {
-  const books = getAllBooks();
+  const { locale, isLoading: localeLoading } = useLocale();
+  const strings = useStrings();
+  const books = getAllBooks(locale);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const [readingProgress, setReadingProgress] = useState<ReadingProgress | null>(null);
@@ -43,12 +46,21 @@ export default function HomeScreen() {
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return "Just now";
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days === 1) return "Yesterday";
-    return `${days} days ago`;
+    if (minutes < 1) return strings.justNow;
+    if (minutes < 60) return `${minutes}${strings.minutesAgo}`;
+    if (hours < 24) return `${hours}${strings.hoursAgo}`;
+    if (days === 1) return strings.yesterday;
+    return `${days} ${strings.daysAgo}`;
   };
+
+  // Show loading state while locale is loading
+  if (localeLoading) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={["top"]}>
+        <View style={styles.container} />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
@@ -62,18 +74,17 @@ export default function HomeScreen() {
           >
             <FontAwesome name="cog" size={22} color={isDark ? "#888" : "#666"} />
           </Pressable>
-          <Text style={styles.title}>Book of Mormon</Text>
-          <Text style={styles.subtitle}>IN PLAIN ENGLISH</Text>
+          <Text style={styles.title}>{strings.title}</Text>
+          <Text style={styles.subtitle}>{strings.subtitle}</Text>
           <Text style={styles.description}>
-            Scripture translated into clear, modern language while preserving its
-            original meaning and spiritual power.
+            {strings.description}
           </Text>
         </View>
 
       {/* Continue Reading */}
       {readingProgress && (
         <View style={styles.continueContainer}>
-          <Text style={styles.sectionTitle}>CONTINUE READING</Text>
+          <Text style={styles.sectionTitle}>{strings.continueReading}</Text>
           <Link
             href={`/${readingProgress.bookSlug}/${readingProgress.chapterNum}`}
             asChild
@@ -82,7 +93,7 @@ export default function HomeScreen() {
               <View style={styles.continueInfo}>
                 <Text style={styles.continueBook}>{readingProgress.bookName}</Text>
                 <Text style={styles.continueChapter}>
-                  Chapter {readingProgress.chapterNum}
+                  {strings.chapter} {readingProgress.chapterNum}
                 </Text>
                 <Text style={styles.continueTime}>
                   {getRelativeTime(readingProgress.timestamp)}
@@ -96,7 +107,7 @@ export default function HomeScreen() {
 
       {/* Books List */}
       <View style={styles.booksContainer}>
-        <Text style={styles.sectionTitle}>ALL BOOKS</Text>
+        <Text style={styles.sectionTitle}>{strings.allBooks}</Text>
         {books.map((book) => (
           <Link
             key={book.shortName}
@@ -107,8 +118,7 @@ export default function HomeScreen() {
               <View style={styles.bookInfo}>
                 <Text style={styles.bookName}>{book.shortName}</Text>
                 <Text style={styles.chapterCount}>
-                  {book.chapters.length} chapter
-                  {book.chapters.length !== 1 ? "s" : ""}
+                  {book.chapters.length} {strings.chapters}
                 </Text>
               </View>
               <Text style={styles.arrow}>›</Text>
