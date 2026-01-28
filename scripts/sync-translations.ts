@@ -24,6 +24,7 @@ interface SourceVerse {
 
 interface SourceChapter {
   number: number;
+  summary?: string;
   verses: SourceVerse[];
 }
 
@@ -46,6 +47,7 @@ interface OutputVerse {
 
 interface OutputChapter {
   number: number;
+  summary?: string;
   verses: OutputVerse[];
 }
 
@@ -68,6 +70,7 @@ function transformData(source: SourceData, lang: string): OutputData {
       shortName: book.shortName,
       chapters: book.chapters.map((chapter) => ({
         number: chapter.number,
+        ...(chapter.summary && { summary: chapter.summary }),
         verses: chapter.verses.map((verse) => ({
           number: verse.number,
           // For English: use plainText (the modern translation)
