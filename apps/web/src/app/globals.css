@@ -395,6 +395,7 @@ h1, h2, h3, h4, h5, h6 {
 .stagger-children > *:nth-child(13) { animation-delay: 600ms; }
 .stagger-children > *:nth-child(14) { animation-delay: 650ms; }
 .stagger-children > *:nth-child(15) { animation-delay: 700ms; }
+.stagger-children > *:nth-child(n+16) { animation-delay: 750ms; }
 
 /* About section styling */
 .about-section {
