@@ -2,7 +2,7 @@
   "expo": {
     "name": "Plain English BOM",
     "slug": "plain-english-bom",
-    "version": "2026.1.18",
+    "version": "2026.1.28",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "plainenglishbom",
