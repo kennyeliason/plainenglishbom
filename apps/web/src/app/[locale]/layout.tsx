@@ -134,7 +134,8 @@ export default async function LocaleLayout({
             }}
           >
             <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+                {/* Brand */}
                 <div className="text-center sm:text-left">
                   <p
                     className="text-lg mb-1"
@@ -153,22 +154,61 @@ export default async function LocaleLayout({
                     {tFooter("tagline")}
                   </p>
                 </div>
-                <div
-                  className="text-sm"
-                  style={{ color: "var(--color-text-muted)" }}
-                >
-                  {tFooter("sourceAttribution")}{" "}
-                  <a
-                    href="https://www.gutenberg.org/ebooks/17"
-                    className="animated-underline"
-                    style={{ color: "var(--color-accent)" }}
-                    target="_blank"
-                    rel="noopener noreferrer"
+
+                {/* Links */}
+                <div className="text-center">
+                  <p
+                    className="text-sm font-medium mb-3"
+                    style={{ color: "var(--color-text-muted)" }}
                   >
-                    Project Gutenberg
-                  </a>
+                    {locale === "es" ? "Enlaces" : "Links"}
+                  </p>
+                  <div className="flex flex-col gap-2 text-sm">
+                    <Link
+                      href={`/${locale}/about/`}
+                      className="animated-underline"
+                      style={{ color: "var(--color-text-secondary)" }}
+                    >
+                      {locale === "es" ? "Acerca de" : "About"}
+                    </Link>
+                    <a
+                      href="https://github.com/plainenglishbom/plainenglishbom-translations"
+                      className="animated-underline"
+                      style={{ color: "var(--color-text-secondary)" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      GitHub
+                    </a>
+                  </div>
+                </div>
+
+                {/* Source */}
+                <div className="text-center sm:text-right">
+                  <p
+                    className="text-sm font-medium mb-3"
+                    style={{ color: "var(--color-text-muted)" }}
+                  >
+                    {locale === "es" ? "Fuente" : "Source"}
+                  </p>
+                  <p
+                    className="text-sm"
+                    style={{ color: "var(--color-text-secondary)" }}
+                  >
+                    {tFooter("sourceAttribution")}{" "}
+                    <a
+                      href="https://www.gutenberg.org/ebooks/17"
+                      className="animated-underline"
+                      style={{ color: "var(--color-accent)" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Project Gutenberg
+                    </a>
+                  </p>
                 </div>
               </div>
+
               <div
                 className="mt-8 pt-6 text-center text-xs"
                 style={{
@@ -176,11 +216,7 @@ export default async function LocaleLayout({
                   color: "var(--color-text-muted)",
                 }}
               >
-                <p className="decorative-rule">
-                  <span style={{ fontFamily: "var(--font-cormorant), serif" }}>
-                    &#10022;
-                  </span>
-                </p>
+                <p>© {new Date().getFullYear()} The Plain English Book of Mormon Project</p>
               </div>
             </div>
           </footer>
