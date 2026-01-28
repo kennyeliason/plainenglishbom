@@ -108,7 +108,7 @@ export default async function BookPage({ params }: BookPageProps) {
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: locale === "es" ? "Inicio" : "Home", url: homeUrl },
-    { name: bookName, url: `${urlPrefix}/${bookSlug}` },
+    { name: bookName, url: `${urlPrefix}/${bookSlug}/` },
   ]);
 
   return (
@@ -187,7 +187,7 @@ export default async function BookPage({ params }: BookPageProps) {
             {book.chapters.map((chapter) => (
               <Link
                 key={chapter.number}
-                href={`${urlPrefix}/${bookSlug}/${chapter.number}`}
+                href={`${urlPrefix}/${bookSlug}/${chapter.number}/`}
                 className="chapter-link"
               >
                 {chapter.number}
@@ -211,7 +211,7 @@ export default async function BookPage({ params }: BookPageProps) {
             {tBook("notSureWhereToStart")}
           </p>
           <Link
-            href={`${urlPrefix}/${bookSlug}/1`}
+            href={`${urlPrefix}/${bookSlug}/1/`}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg transition-all hover:scale-[1.02]"
             style={{
               background: "var(--color-accent)",

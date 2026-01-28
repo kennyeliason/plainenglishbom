@@ -135,7 +135,7 @@ export default async function HomePage({ params }: HomePageProps) {
               return (
                 <Link
                   key={book.shortName}
-                  href={`${urlPrefix}/${bookSlug}`}
+                  href={`${urlPrefix}/${bookSlug}/`}
                   className="book-card group block p-6 rounded-xl"
                   style={{
                     background: "var(--color-bg-tertiary)",

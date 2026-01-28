@@ -44,7 +44,7 @@ export function ContinueReading({ locale = "en" }: ContinueReadingProps) {
         {continueLabel}
       </p>
       <Link
-        href={`${urlPrefix}/${localizedSlug}/${progress.chapterNum}`}
+        href={`${urlPrefix}/${localizedSlug}/${progress.chapterNum}/`}
         className="group inline-flex items-center gap-3"
       >
         <span

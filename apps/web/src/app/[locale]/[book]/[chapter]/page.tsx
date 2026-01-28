@@ -153,7 +153,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: locale === "es" ? "Inicio" : "Home", url: homeUrl },
-    { name: bookName, url: `${urlPrefix}/${bookSlug}` },
+    { name: bookName, url: `${urlPrefix}/${bookSlug}/` },
     {
       name: locale === "es" ? `Capítulo ${chapter.number}` : `Chapter ${chapter.number}`,
       url: `${urlPrefix}/${bookSlug}/${chapter.number}`,
@@ -161,10 +161,10 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
   ]);
 
   const prevUrl = prevChapter
-    ? `${urlPrefix}/${bookSlug}/${prevChapter}`
+    ? `${urlPrefix}/${bookSlug}/${prevChapter}/`
     : null;
   const nextUrl = nextChapter
-    ? `${urlPrefix}/${bookSlug}/${nextChapter}`
+    ? `${urlPrefix}/${bookSlug}/${nextChapter}/`
     : null;
 
   return (
@@ -183,7 +183,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             href={
               book.chapters.length === 1
                 ? homeUrl
-                : `${urlPrefix}/${bookSlug}`
+                : `${urlPrefix}/${bookSlug}/`
             }
             className="nav-link inline-flex items-center gap-2 text-sm"
           >
@@ -207,7 +207,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           <div className="flex items-center gap-2 sm:gap-4">
             {prevChapter && (
               <Link
-                href={`${urlPrefix}/${bookSlug}/${prevChapter}`}
+                href={`${urlPrefix}/${bookSlug}/${prevChapter}/`}
                 className="nav-link text-sm inline-flex items-center gap-1"
               >
                 <svg
@@ -229,7 +229,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
             )}
             {nextChapter && (
               <Link
-                href={`${urlPrefix}/${bookSlug}/${nextChapter}`}
+                href={`${urlPrefix}/${bookSlug}/${nextChapter}/`}
                 className="nav-link text-sm inline-flex items-center gap-1"
               >
                 <span className="hidden sm:inline">{t("chapter")}</span>{" "}
@@ -309,7 +309,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           {comparison && book.shortName !== "1 Nephi" && locale === "en" && (
             <div className="mt-4">
               <Link
-                href={`/compare/${bookSlug}/${chapterNum}`}
+                href={`/compare/${bookSlug}/${chapterNum}/`}
                 className="compare-link inline-flex items-center gap-2 px-4 py-2 rounded-md border text-sm transition-colors"
                 style={{
                   backgroundColor: "var(--color-bg-secondary)",
@@ -390,7 +390,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
         >
           {prevChapter ? (
             <Link
-              href={`${urlPrefix}/${bookSlug}/${prevChapter}`}
+              href={`${urlPrefix}/${bookSlug}/${prevChapter}/`}
               className="group flex items-center gap-3 py-2 rounded-lg transition-colors"
               style={{ color: "var(--color-text-secondary)" }}
             >
@@ -428,7 +428,7 @@ export default async function ChapterPage({ params }: ChapterPageProps) {
           )}
           {nextChapter && (
             <Link
-              href={`${urlPrefix}/${bookSlug}/${nextChapter}`}
+              href={`${urlPrefix}/${bookSlug}/${nextChapter}/`}
               className="group flex items-center gap-3 py-2 rounded-lg transition-colors text-right"
               style={{ color: "var(--color-text-secondary)" }}
             >

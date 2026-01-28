@@ -60,7 +60,7 @@ export default async function ComparePage({ params }: ComparePageProps) {
       {/* Header */}
       <header className="mb-8">
         <Link
-          href={`${urlPrefix}/${book}/${chapter}`}
+          href={`${urlPrefix}/${book}/${chapter}/`}
           className="text-sm mb-4 inline-block transition-colors"
           style={{ color: "var(--color-text-muted)" }}
         >
