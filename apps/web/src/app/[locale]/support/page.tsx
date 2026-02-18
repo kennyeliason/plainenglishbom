@@ -98,13 +98,13 @@ export default async function SupportPage({ params }: SupportPageProps) {
               <div>
                 <h3 className="font-medium text-white">
                   {locale === "es"
-                    ? "¿La aplicación es gratuita?"
-                    : "Is the app free?"}
+                    ? "¿Cuánto cuesta la aplicación?"
+                    : "How much does the app cost?"}
                 </h3>
                 <p className="text-[#8b949e]">
                   {locale === "es"
-                    ? "Sí, la aplicación es completamente gratuita sin anuncios ni suscripciones."
-                    : "Yes, the app is completely free with no ads or subscriptions."}
+                    ? "La aplicación cuesta $0.99 sin anuncios ni suscripciones."
+                    : "The app costs $0.99 with no ads or subscriptions."}
                 </p>
               </div>
 

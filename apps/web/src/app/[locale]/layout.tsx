@@ -60,6 +60,10 @@ export default async function LocaleLayout({
           name="viewport"
           content="width=device-width, initial-scale=1, maximum-scale=1"
         />
+        <meta
+          name="apple-itunes-app"
+          content="app-id=6757943123"
+        />
         <StructuredData
           data={[generateOrganizationSchema(), generateWebSiteSchema()]}
         />
